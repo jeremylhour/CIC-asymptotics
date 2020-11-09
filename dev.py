@@ -39,3 +39,10 @@ ax.legend(fancybox=True, loc='right')
 
 plt.show()
     
+### Test
+
+x = np.random.uniform(size=50)
+z = np.random.uniform(size=80)
+y = np.random.normal(size=80)
+
+estimator_unknown_ranks(outcome = y, points_to_translate=z, points_for_distribution=x)
