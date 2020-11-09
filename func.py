@@ -130,6 +130,7 @@ def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
     theta = U_tilde.mean()
     return theta
 
+
 def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     """
     generate_data:
@@ -147,4 +148,25 @@ def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
     
     return y, z, x, theta0
+
+
+def performance_report(y_hat, theta0):
+    
+    y_centered = y_hat - theta0
+    report = {}
+    report['theta0'] = theta0
+    report['n_obs']  = len(y_hat)
+    report['bias']   = y_centered.mean(axis=0)
+    report['MAE']    = abs(y_centered).mean(axis=0)
+    report['RMSE']   = y_centered.std(axis=0)
+    
+    print("Number of simulations: {} \n".format(report['n_obs']))
+    for metric in ['bias', 'MAE', 'RMSE']:
+        print(metric+': ')
+        for model in y_centered.columns:
+            print('- {}: {:.4f}'.format(model, report[metric][model]))
+        print('\n')
+    
+    return report
+            
     
