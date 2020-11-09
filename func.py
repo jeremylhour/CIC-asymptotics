@@ -122,7 +122,7 @@ def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
     :param distrib_x: distribution of X
     """
     Q_y = distrib_y.ppf # Quantile function of Y
-    F_z = distrib_z.pdf # CDF of Z
+    F_z = distrib_z.cdf # CDF of Z
     Q_x = distrib_x.ppf # Quantile function of X
     
     U = np.random.uniform(size=size)
@@ -133,13 +133,14 @@ def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
 def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     """
     generate_data:
-        generate data following the specified distributions. Using the names in scipy.stats
+        generate data following the specified distributions.
+        Should be of class "rv_continuous" from scipy.stats
         
-    :param distrib_y: distribution of Y
-    :param distrib_z: distribution of Z
-    :param distrib_x: distribution of X
+    :param distrib_y: distribution of Y, instance of rv_continuous
+    :param distrib_z: distribution of Z, instance of rv_continuous
+    :param distrib_x: distribution of X, instance of rv_continuous
     :param size: sample size for each vector
-    """
+    """        
     y = distrib_y.ppf(np.random.uniform(size=size))  
     z = distrib_z.ppf(np.random.uniform(size=size)) 
     x = distrib_x.ppf(np.random.uniform(size=size))   

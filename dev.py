@@ -15,6 +15,6 @@ from func import *
 from scipy.stats import expon
     
 ### Test
-y, z, x, theta0 =  generate_data(expon, expon, expon, size = 10000)
+y, z, x, theta0 =  generate_data(expon(scale=.5), expon(scale=1), expon(scale=.7), size = 10000)
 
 estimator_unknown_ranks(outcome = y, points_to_translate=x, points_for_distribution=z, method="smoothed")
