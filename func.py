@@ -24,18 +24,37 @@ def smoothed_ecdf(new_points, x):
     """
     smoothed_ecdf:
         Smoothed empirical CDF
-        as in Shorack and Wellner (p. 86)
+        as in Shorack and Wellner (p. 86), but extended to non-bounded support.
+        Linear extension outside the support using the nearest linear parts.
     
     :param new_points: new points for which the value is returned
     :param x: points used to compute the smoothed empirical CDF
     """
     n_points = len(x)
-    sorted_x = np.zeros(n_points+1)
-    sorted_x[1:] =  np.array(sorted(x))
-    sorted_x = np.append(sorted_x,1) # add 0 first and 1 at the end
+    sorted_x = np.array(sorted(x))
+    
+    ### Compute extreme values outside the support (cf. email Xavier 09/11),
+    ### by extending the affine smoothing to the origin or to 1.
+    # Lower bound
+    b_1 = 1/((n_points+1)*(sorted_x[1]-sorted_x[0]))
+    a_1 = 1/(n_points+1) - b_1*sorted_x[0]
+    lb = -a_1/b_1
+    
+    # Upper bound
+    b_n = 1/((n_points+1)*(sorted_x[-1]-sorted_x[-2]))
+    a_n = (n_points-1)/(n_points+1) - b_n*sorted_x[-2]
+    ub = (1-a_n)/b_n
+    
+    sorted_x = np.insert(sorted_x, 0, lb) # add lb first
+    sorted_x = np.append(sorted_x, ub) # add ub last
     
     y = []
     for new_point in new_points:
+        if new_point < lb:
+            y.append(0)
+        elif new_point> ub:
+            y.append(1)
+        else:
             index = np.where(sorted_x  <= new_point)[0][-1]
             rank_bounds = [index, index+1]
             bounds = sorted_x[rank_bounds]
@@ -78,6 +97,13 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
 
 
 def estimator_unknown_ranks(outcome, points_to_translate, points_for_distribution, method="smoothed"):
+    """
+    estimator_unknown_ranks:
+        computes the estimator (1), i.e. average of quantiles of the outcome for each rank
+        
+    :param outcome: np.array of the outcome
+    :param ranks: np.array of the ranks
+    """
     
     estimated_ranks = counterfactual_ranks(points_to_translate, points_for_distribution=points_for_distribution, method=method)
     theta = estimator_known_ranks(outcome, estimated_ranks)
