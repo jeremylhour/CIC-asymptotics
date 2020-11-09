@@ -3,11 +3,14 @@
 """
 Created on Mon Nov  9 13:43:00 2020
 
+All functions necessary to run the program
+
 @author: jeremylhour
 """
 
 import numpy as np
 from statsmodels.distributions.empirical_distribution import ECDF
+
 
 def ranks_and_antiranks(points):
     """
@@ -87,7 +90,6 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
     :param points_for_distribution: points for which to compute the CDF
     :param method: can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     """
-    
     if method == "smoothed":
         y = smoothed_ecdf(new_points=points_to_predict, x=points_for_distribution)
     if method == "standard":
@@ -99,14 +101,49 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
 def estimator_unknown_ranks(outcome, points_to_translate, points_for_distribution, method="smoothed"):
     """
     estimator_unknown_ranks:
-        computes the estimator (1), i.e. average of quantiles of the outcome for each rank
+        computes the estimator (1), i.e. average of quantiles of the outcome for each estimated rank
         
     :param outcome: np.array of the outcome
     :param ranks: np.array of the ranks
     """
-    
     estimated_ranks = counterfactual_ranks(points_to_translate, points_for_distribution=points_for_distribution, method=method)
     theta = estimator_known_ranks(outcome, estimated_ranks)
     return theta
+
     
+def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
+    """
+    true_theta:
+        compute the true value of theta,
+        by simulation since analytical formula is not possible.
+        
+    :param distrib_y: distribution of Y
+    :param distrib_z: distribution of Z
+    :param distrib_x: distribution of X
+    """
+    Q_y = distrib_y.ppf # Quantile function of Y
+    F_z = distrib_z.pdf # CDF of Z
+    Q_x = distrib_x.ppf # Quantile function of X
+    
+    U = np.random.uniform(size=size)
+    U_tilde = Q_y(F_z(Q_x(U)))
+    theta = U_tilde.mean()
+    return theta
+
+def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
+    """
+    generate_data:
+        generate data following the specified distributions. Using the names in scipy.stats
+        
+    :param distrib_y: distribution of Y
+    :param distrib_z: distribution of Z
+    :param distrib_x: distribution of X
+    :param size: sample size for each vector
+    """
+    y = distrib_y.ppf(np.random.uniform(size=size))  
+    z = distrib_z.ppf(np.random.uniform(size=size)) 
+    x = distrib_x.ppf(np.random.uniform(size=size))   
+    theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
+    
+    return y, z, x, theta0
     
