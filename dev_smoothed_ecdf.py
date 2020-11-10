@@ -13,13 +13,14 @@ from statsmodels.distributions.empirical_distribution import ECDF
 from func import *
 
 import matplotlib.pyplot as plt
+from scipy.stats import powerlaw, norm
 
 # generate uniform points
-n = 200
-x = np.random.uniform(size=n)
+n = 1000
+x = norm.ppf(np.random.uniform(size=n))
         
 
-support = np.linspace(-0.01, 1.1, 1000, endpoint=False)
+support = np.linspace(-5, 5, 1000, endpoint=False)
 
 # 1. Non smoothed empirical CDF
 ecdf = ECDF(x)
