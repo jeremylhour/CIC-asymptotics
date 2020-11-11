@@ -21,11 +21,13 @@ from func_kde import *
 
 from scipy.stats import expon
    
-random.seed(999)
-    
-### Core code
 
-B = 300
+
+random.seed(999)
+
+B = 500
+
+### Core code
 
 results = np.zeros(shape=(B, 3))
 sigma = np.zeros(shape=(B, 2))
@@ -56,7 +58,7 @@ print('Theta_0 vaut: {:.2f}'.format(theta0))
 
 y_hat = pd.DataFrame({'smoothed': results[:,1],
                       'standard': results[:,2]})
-sigma = pd.DataFrame({'smoothed': sigma[:,0],
-                      'standard': sigma[:,0]})
+sigma_df = pd.DataFrame({'smoothed': sigma[:,0],
+                      'standard': sigma[:,1]})
 
-report = performance_report(y_hat, theta0, sigma=sigma)
+report = performance_report(y_hat, theta0, sigma=sigma_df)
