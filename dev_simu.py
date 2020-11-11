@@ -6,13 +6,16 @@ Created on Mon Nov  9 12:07:05 2020
 @author: jeremylhour
 """
 import sys
-sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/')
+sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
 
 import numpy as np
 import pandas as pd
 import time
 from statsmodels.distributions.empirical_distribution import ECDF
-from func import *
+
+from func_main import *
+from func_ecdf import *
+from func_simu import *
 
 from scipy.stats import expon
    

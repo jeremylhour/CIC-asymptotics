@@ -7,10 +7,11 @@ Created on Tue Nov 10 18:24:50 2020
 """
 
 import sys
-sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/')
+sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
 
 import numpy as np
-from func_sd import *
+from func_kde import *
+
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 
