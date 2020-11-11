@@ -62,4 +62,30 @@ def compute_phi(y, x, z, method="smoothed"):
         phi.append(inside_integral.mean())
     
     return np.array(phi)
+
+
+def compute_epsilon(y, x, z, method="smoothed"):
+    """
+    NOT SURE IT WORKS!!!
+
+    """
+    
+    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
+    counterfactual_y = np.quantile(y, u_hat)
+    
+    inside_integral = -(counterfactual_y[np.newaxis].T - counterfactual_y)
+    epsilon = inside_integral.mean(axis=1)
+    return np.array(epsilon)
+
+
+def compute_se(y, x, z, method="smoothed"):
+    ### ATTENTION: PAS ADAPTE A DIFFERENTES TAILLES ECHANTILLONS
+    
+    zeta      = compute_zeta(y, x, z, method=method)
+    phi       = compute_phi(y, x, z, method=method)
+    epsilon   = compute_epsilon(y, x, z, method=method)
+    
+    
+    se = np.sqrt((zeta**2).mean() + (phi**2).mean() + (epsilon**2).mean())
+    return se / np.sqrt(len(y))
         
