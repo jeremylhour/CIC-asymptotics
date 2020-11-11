@@ -9,6 +9,8 @@ Created on Wed Nov 11 12:07:14 2020
 """
 
 import numpy as np
+from scipy.stats import norm
+
 
 def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
     """
@@ -49,7 +51,16 @@ def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     return y, z, x, theta0
 
 
-def performance_report(y_hat, theta0):
+def performance_report(y_hat, theta0, **kwargs):
+    """
+    performance_report:
+        creates the report for simulations,
+        computes bias, MSE, MAE and coverage rate.
+        
+    :param y_hat: B x K np.array of B simulations for K estimators
+    :param theta0: scalar, true value of theta
+    """
+    sigma = kwargs.get('sigma', np.ones(y_hat.shape))
     
     y_centered = y_hat - theta0
     report = {}
@@ -58,9 +69,10 @@ def performance_report(y_hat, theta0):
     report['bias']   = y_centered.mean(axis=0)
     report['MAE']    = abs(y_centered).mean(axis=0)
     report['RMSE']   = y_centered.std(axis=0)
+    report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0)
     
     print("Number of simulations: {} \n".format(report['n_obs']))
-    for metric in ['bias', 'MAE', 'RMSE']:
+    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate']:
         print(metric+': ')
         for model in y_centered.columns:
             print('- {}: {:.4f}'.format(model, report[metric][model]))
