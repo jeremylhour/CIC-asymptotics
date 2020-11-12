@@ -24,7 +24,7 @@ from func_ecdf import *
 from func_simu import *
 from func_kde import *
 
-from scipy.stats import expon
+from scipy.stats import expon, pareto
    
 
 ########## LOAD YAML CONFIG ##########
@@ -35,6 +35,15 @@ with open(config_file, 'r') as stream:
     
 B = config['nb_simu']
 sample_size = config['sample_size']
+
+lambda_x = config['lambda_x']
+lambda_z = config['lambda_z']
+alpha_y = config['alpha_y']
+
+print('Parameter values give b_2={:.2f}'.format(1-lambda_x/lambda_z))
+print('Parameter values give d_2={:.2f}'.format(1/alpha_y))
+print('So b_2+d_2={:.2f}'.format(1-lambda_x/lambda_z+1/alpha_y))
+print('--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply')
 
 print('Running {} simulations with sample size {}...'.format(B, sample_size))
 
@@ -52,9 +61,9 @@ for b in range(B):
     sys.stdout.write("\r{0}".format(b))
     sys.stdout.flush()
     
-    y, z, x, theta0 =  generate_data(distrib_y = expon(scale=2),
-                                     distrib_z = expon(scale=1),
-                                     distrib_x = expon(scale=.2),
+    y, z, x, theta0 =  generate_data(distrib_y = pareto(b=alpha_y, loc=1),
+                                     distrib_z = expon(scale=lambda_z),
+                                     distrib_x = expon(scale=lambda_x),
                                      size = sample_size)
     # Estimator and S.E.
     theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed")

@@ -1,2 +1,5 @@
 nb_simu: 300        # Nb. of simulations
-sample_size: 2000    # Sample size
+sample_size: 1000    # Sample size
+lambda_x: .9        # Parameter of exponential distribution for X
+lambda_z: 1         # Parameter of exponential distribution for Z
+alpha_y: 5          # Parameter of Pareto distribution for Y
