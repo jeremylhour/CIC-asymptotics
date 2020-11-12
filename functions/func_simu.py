@@ -71,6 +71,7 @@ def performance_report(y_hat, theta0, **kwargs):
     report['RMSE']   = y_centered.std(axis=0)
     report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0)
     
+    print('Theta_0 vaut: {:.2f}'.format(report['theta0']))
     print("Number of simulations: {} \n".format(report['n_obs']))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate']:
         print(metric+': ')

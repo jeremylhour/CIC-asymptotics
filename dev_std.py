@@ -25,15 +25,19 @@ y, z, x, theta0 =  generate_data(distrib_y = expon(scale=10),
                                  size = 100)
 
 
-def compute_zeta(y, x, z, method="smoothed"):
+def compute_se(y, x, z, method="smoothed"):
+    """
+    compute_se:
+        ATTENTION: PAS ADAPTE A DIFFERENTES TAILLES ECHANTILLONS
+    """
+    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
+    denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y) 
+    
     """
     compute_zeta:
         compute vector zeta_i as in out paper,
         similar to Q in Athey and Imbens (2006).
     """
-    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
-    denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y) 
-    
     support = np.linspace(1/len(y), 1, len(y), endpoint=True) # = F_y(Y)
     zeta = []
     for point in support:
@@ -41,51 +45,37 @@ def compute_zeta(y, x, z, method="smoothed"):
         indicator[np.where(point <= u_hat)] = 1
         inside_integral = -(indicator - u_hat)/denominateur
         zeta.append(inside_integral.mean())
-        
-    return np.array(zeta)
+    zeta = np.array(zeta)
     
-
-def compute_phi(y, x, z, method="smoothed"):
+    
     """
     compute_phi:
         compute vector phi_i as in out paper,
         similar to P in Athey and Imbens (2006).
     """
-    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
-    denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
-    
+    support = np.linspace(1/len(z), 1, len(z), endpoint=True) # = F_z(Z)
     phi = []
-    for point in z:
+    for point in support:
         indicator = np.zeros(len(u_hat))
         indicator[np.where(point <= u_hat)] = 1
-        inside_integral = indicator-u_hat/denominateur
+        inside_integral = (indicator-u_hat)/denominateur
         phi.append(inside_integral.mean())
+    phi = np.array(phi)
     
-    return np.array(phi)
-
-
-def compute_epsilon(y, x, z, method="smoothed"):
-    """
-    NOT SURE IT WORKS!!!
-
-    """
     
-    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
+    """
+    compute_epsilon:
+        NOT SURE IT WORKS!!!
+
+    """
     counterfactual_y = np.quantile(y, u_hat)
     
     inside_integral = -(counterfactual_y[np.newaxis].T - counterfactual_y)
-    epsilon = inside_integral.mean(axis=1)
-    return np.array(epsilon)
-
-
-def compute_se(y, x, z, method="smoothed"):
-    ### ATTENTION: PAS ADAPTE A DIFFERENTES TAILLES ECHANTILLONS
+    epsilon = np.array(inside_integral.mean(axis=1))
     
-    zeta      = compute_zeta(y, x, z, method=method)
-    phi       = compute_phi(y, x, z, method=method)
-    epsilon   = compute_epsilon(y, x, z, method=method)
-    
-    
+    """
+    compute standard error
+    """
     se = np.sqrt((zeta**2).mean() + (phi**2).mean() + (epsilon**2).mean())
     return se / np.sqrt(len(y))
         
