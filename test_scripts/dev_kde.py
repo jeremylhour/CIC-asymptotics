@@ -6,8 +6,8 @@ Created on Tue Nov 10 18:24:50 2020
 @author: jeremylhour
 """
 
-import sys
-sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
+import sys, os
+sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
 import numpy as np
 from func_kde import *

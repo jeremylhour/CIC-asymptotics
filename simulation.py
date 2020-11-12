@@ -8,8 +8,8 @@ Created on Mon Nov  9 12:07:05 2020
 @author: jeremylhour
 """
 
-import sys
-sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
+import sys, os
+sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
 import numpy as np
 import pandas as pd
@@ -28,16 +28,13 @@ from scipy.stats import expon
    
 
 ########## LOAD YAML CONFIG ##########
-config_file='/Users/jeremylhour/Documents/code/CIC-asymptotics/config_simu.yml'
+config_file= os.path.join(os.getcwd(),'config_simulation.yml')
 
 with open(config_file, 'r') as stream:
     config = yaml.safe_load(stream)
     
 B = config['nb_simu']
 sample_size = config['sample_size']
-
-B = 100
-sample_size = 3000
 
 print('Running {} simulations with sample size {}...'.format(B, sample_size))
 

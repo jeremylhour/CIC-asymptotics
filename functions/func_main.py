@@ -8,8 +8,8 @@ Created on Wed Nov 11 12:02:50 2020
 
 @author: jeremylhour
 """
-import sys
-sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
+import sys, os
+sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
 from func_kde import *
 from func_ecdf import *
