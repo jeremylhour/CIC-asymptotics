@@ -36,7 +36,8 @@ with open(config_file, 'r') as stream:
 B = config['nb_simu']
 sample_size = config['sample_size']
 
-sample_size = 1000
+B = 100
+sample_size = 3000
 
 print('Running {} simulations with sample size {}...'.format(B, sample_size))
 
@@ -58,14 +59,12 @@ for b in range(B):
                                      distrib_z = expon(scale=1),
                                      distrib_x = expon(scale=.2),
                                      size = sample_size)
-    # Estimator and true value
-    theta_smooth = estimator_unknown_ranks(outcome = y, points_to_translate=x, points_for_distribution=z, method="smoothed")
-    theta_standard = estimator_unknown_ranks(outcome = y, points_to_translate=x, points_for_distribution=z, method="standard")
-    results[b,] = [theta0, theta_smooth, theta_standard]
+    # Estimator and S.E.
+    theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed")
+    theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
     
-    # Standard error
-    sigma_smooth = compute_se(y, x, z, method="smoothed")
-    sigma_standard = compute_se(y, x, z, method="standard")
+    # Collecting results
+    results[b,] = [theta0, theta_smooth, theta_standard]
     sigma[b,] = [sigma_smooth, sigma_standard]
 
 print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")

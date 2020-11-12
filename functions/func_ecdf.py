@@ -23,7 +23,7 @@ def ranks_and_antiranks(points):
     return ranks, np.argsort(ranks)
 
 
-def smoothed_ecdf(new_points, x):
+def smoothed_ecdf(new_points, data):
     """
     smoothed_ecdf:
         Smoothed empirical CDF
@@ -33,8 +33,8 @@ def smoothed_ecdf(new_points, x):
     :param new_points: new points for which the value is returned
     :param x: points used to compute the smoothed empirical CDF
     """
-    n_points = len(x)
-    sorted_x = np.array(sorted(x))
+    n_points = len(data)
+    sorted_x = np.array(sorted(data))
     
     ### Compute extreme values outside the support (cf. email Xavier 09/11),
     ### by extending the affine smoothing to the origin or to 1.

@@ -14,15 +14,14 @@ from scipy.stats import expon
 
 from func_ecdf import *
 from func_kde import *
-from func_main import *
 from func_simu import *
-
+from func_main import *
 
 # simulate data
 y, z, x, theta0 =  generate_data(distrib_y = expon(scale=10),
                                  distrib_z = expon(scale=1),
                                  distrib_x = expon(scale=.2),
-                                 size = 100)
+                                 size = 10000)
 
 
 def compute_se(y, x, z, method="smoothed"):
@@ -32,6 +31,7 @@ def compute_se(y, x, z, method="smoothed"):
     """
     u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
     denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y) 
+    
     
     """
     compute_zeta:
