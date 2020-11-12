@@ -1,2 +1,2 @@
 nb_simu: 300        # Nb. of simulations
-sample_size: 100    # Sample size
+sample_size: 2000    # Sample size

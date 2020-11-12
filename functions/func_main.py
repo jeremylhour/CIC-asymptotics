@@ -66,7 +66,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
     
     denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y) 
     counterfactual_y = np.quantile(y, u_hat)
-    theta = counterfactual_y.mean()    
+    theta_hat = counterfactual_y.mean()    
             
     
     """
@@ -101,11 +101,9 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
     
     """
     compute_epsilon:
-        NOT SURE IT WORKS!!!
-
+        Formula of Athey and Imbens (2006)
     """
-    inside_integral = -(counterfactual_y[np.newaxis].T - counterfactual_y)
-    epsilon = np.array(inside_integral.mean(axis=1))
+    epsilon = -(counterfactual_y - theta_hat)
     
     
     """
@@ -113,6 +111,6 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
     """
     se = np.sqrt((zeta**2).mean() + (phi**2).mean() + (epsilon**2).mean())
 
-    return theta, se/np.sqrt(len(y))
+    return theta_hat, se/np.sqrt(len(y))
             
     
