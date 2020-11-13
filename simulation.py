@@ -28,7 +28,8 @@ from scipy.stats import expon, pareto
    
 
 ########## LOAD YAML CONFIG ##########
-config_file= os.path.join(os.getcwd(),'config_simulation.yml')
+#config_file= os.path.join(os.getcwd(),'config_simulation.yml')
+config_file= os.path.join(os.getcwd(),sys.argv[1])
 
 with open(config_file, 'r') as stream:
     config = yaml.safe_load(stream)
