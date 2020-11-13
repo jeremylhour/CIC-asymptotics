@@ -6,7 +6,7 @@ Codes for Change-in-Change Asymptotics project with Xavier D'Haultfoeuille and M
 
 Can be ran from terminal by being in the main folder and entering:
 ```
-python3 simulation.py
+python3 simulation.py config_simulation.yml
 ```
 
 ## Other folders:
