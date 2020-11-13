@@ -61,6 +61,7 @@ def performance_report(y_hat, theta0, **kwargs):
     :param theta0: scalar, true value of theta
     """
     sigma = kwargs.get('sigma', np.ones(y_hat.shape))
+    file = kwargs.get('file', 'default_output_fil.txt')
     
     y_centered = y_hat - theta0
     report = {}
@@ -78,5 +79,15 @@ def performance_report(y_hat, theta0, **kwargs):
         for model in y_centered.columns:
             print('- {}: {:.4f}'.format(model, report[metric][model]))
         print('\n')
+        
+    ##### WRITING TO FILE #####
+    f = open(file, "a")
+    f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
+    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate']:
+        f.write(metric+': \n ')
+        for model in y_centered.columns:
+            f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))
+        f.write('\n')
+    f.close()
     
     return report
