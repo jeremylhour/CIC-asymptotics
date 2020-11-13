@@ -42,7 +42,9 @@ lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
 outfile = 'output/simulations_B='+str(B)+'_n='+str(sample_size)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)+'.txt'
-
+if not os.path.exists('output'):
+    os.makedirs('output')
+    
 print('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f}'.format(lambda_x, lambda_z, alpha_y))
 print('Parameter values give b_2={:.2f}'.format(1-lambda_x/lambda_z))
 print('Parameter values give d_2={:.2f}'.format(1/alpha_y))
