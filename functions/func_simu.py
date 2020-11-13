@@ -82,6 +82,7 @@ def performance_report(y_hat, theta0, **kwargs):
         
     ##### WRITING TO FILE #####
     f = open(file, "a")
+    f.write('\n')
     f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate']:
         f.write(metric+': \n ')
