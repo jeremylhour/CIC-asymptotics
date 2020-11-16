@@ -97,7 +97,7 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     f.close()
     
     ##### SAVING HISTOGRAM #####
-    num_bins = report['n_simu']//5
+    num_bins = report['n_simu']//10
     for model in y_centered.columns:
         fig, ax = plt.subplots()
         n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
@@ -107,6 +107,6 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
         ax.set_ylabel('Probability density')
         ax.set_title(r'Histogram for model: '+model)
         fig.tight_layout()
-        plt.savefig(file+'_'+model+'.jpg',dpi=(96))
+        plt.savefig(file+'_n='+str(n_obs)+'_'+model+'.jpg',dpi=(96))
     
     return report
