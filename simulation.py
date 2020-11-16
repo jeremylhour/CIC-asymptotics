@@ -16,6 +16,7 @@ import pandas as pd
 import random
 import time
 import yaml
+import math
 
 from statsmodels.distributions.empirical_distribution import ECDF
 
@@ -91,17 +92,27 @@ for b in range(B):
     # Collecting results
     results[b,] = [theta0, theta_smooth, theta_standard]
     sigma[b,] = [sigma_smooth, sigma_standard]
+    
+    # Checking error division
+    if math.isinf(sigma_smooth):
+        print(' -- error for this iteration')
+        results[b,] = [np.nan]*3
+        sigma[b,] = [np.nan]*2
 
 print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
 
 
 ########## POST-PROCESSS ##########
+results = pd.DataFrame(results)
+results.dropna(axis=0, inplace=True)
 
-theta0 = results[:,0].mean()
+theta0 = results[0].mean()
 
-y_hat = pd.DataFrame({'smoothed': results[:,1],
-                      'standard': results[:,2]})
+y_hat = pd.DataFrame({'smoothed': results[1],
+                      'standard': results[2]})
+
 sigma_df = pd.DataFrame({'smoothed': sigma[:,0],
                       'standard': sigma[:,1]})
+sigma_df.dropna(axis=0, inplace=True)
 
 report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
