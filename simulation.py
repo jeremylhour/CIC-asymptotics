@@ -42,7 +42,7 @@ lambda_x = config['lambda_x']
 lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
-outfile = 'output/simulations_B='+str(B)+'_n='+str(sample_size)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)+'.txt'
+outfile = 'output/simulations_B='+str(B)+'_n='+str(sample_size)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
 if not os.path.exists('output'):
     os.makedirs('output')
     
@@ -55,7 +55,7 @@ print('--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply')
 print('Running {} simulations with sample size {}...'.format(B, sample_size))
 
 ##### SAVING TO FILE ###########
-f = open(outfile, "a")
+f = open(outfile+'.txt', "a")
 f.write('\n')
 f.write('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f} \n'.format(lambda_x, lambda_z, alpha_y),)
 f.write('Parameter values give b_2={:.2f} \n'.format(1-lambda_x/lambda_z))
@@ -104,4 +104,4 @@ y_hat = pd.DataFrame({'smoothed': results[:,1],
 sigma_df = pd.DataFrame({'smoothed': sigma[:,0],
                       'standard': sigma[:,1]})
 
-report = performance_report(y_hat, theta0, sigma=sigma_df, file=outfile)
+report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
