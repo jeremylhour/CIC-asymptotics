@@ -97,7 +97,7 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     f.close()
     
     ##### SAVING HISTOGRAM #####
-    num_bins = 100
+    num_bins = 50
     for model in y_centered.columns:
         fig, ax = plt.subplots()
         n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
@@ -136,7 +136,7 @@ def latex_table(results, file, models=['standard','smoothed'], digits=3):
         header = r'\begin{tabular}{l|'
         for sample_size in results:
             sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+str(sample_size)+'}'
-            header = header + 'c*'+str(len(metrics_set))
+            header = header + ('c'*len(metrics_set))
             for metric in metrics_set:
                 string = string+' & '+str(round(results[sample_size][metric][model], digits))
                 item = item+' & '+metric
