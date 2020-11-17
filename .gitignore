@@ -131,5 +131,7 @@ dmypy.json
 # Mac files
 .DS_Store
 
-# output
+# own folders
 output/*
+input_files/*
+files_list.txt
