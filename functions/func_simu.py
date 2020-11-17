@@ -97,7 +97,7 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     f.close()
     
     ##### SAVING HISTOGRAM #####
-    num_bins = report['n_simu']//10
+    num_bins = 100
     for model in y_centered.columns:
         fig, ax = plt.subplots()
         n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
