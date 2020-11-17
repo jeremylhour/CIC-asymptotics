@@ -101,8 +101,8 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     for model in y_centered.columns:
         fig, ax = plt.subplots()
         n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
-        y = (1 / (np.sqrt(2 * np.pi) * sigma[model].mean())) * np.exp(-0.5 * (1 / sigma[model].mean() * bins**2))
-        ax.plot(bins, y, '--')
+        norm_fit = norm.pdf(bins, scale=np.sqrt(n_obs)*sigma[model].mean())
+        ax.plot(bins, norm_fit, '--')
         ax.set_xlabel(r'$n^{1/2}$ ($\hat \theta$ - $\theta_0$)')
         ax.set_ylabel('Probability density')
         ax.set_title(r'Histogram for model: '+model)
@@ -110,3 +110,60 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
         plt.savefig(file+'_n='+str(n_obs)+'_'+model+'.jpg',dpi=(96))
     
     return report
+
+
+def latex_table(results, file, models=['standard','smoothed'], digits=3):
+    """
+    latex_table:
+        outputs a latex table from a list of results
+    :param results: list of results based on the format results[sample_size][metric][model]
+    :param file: name of the output file
+    """
+    metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
+
+    k=0
+
+    f = open(file+'.tex', "a")
+    f.write('\n')
+    f.write(r'\begin{table}')
+    f.write('\n')
+
+    for model in models:
+        k += 1
+        string = model
+        item = 'model'
+        sample_line = ' '
+        header = r'\begin{tabular}{l|'
+        for sample_size in results:
+            sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+str(sample_size)+'}'
+            header = header + 'c*'+str(len(metrics_set))
+            for metric in metrics_set:
+                string = string+' & '+str(round(results[sample_size][metric][model], digits))
+                item = item+' & '+metric
+        string = string +'\\\\'
+        item = item +'\\\\'
+        sample_line = sample_line +'\\\\'
+        header = header + '}'
+        ### WRITING
+        if k == 1:
+            f.write(header)
+            f.write('\n')
+            f.write(r'\toprule')
+            f.write('\n')
+            f.write(sample_line)
+            f.write('\n')
+            f.write(item)
+            f.write('\n')
+            f.write(r'\hline')
+            f.write('\n')
+        f.write(string)
+        f.write('\n')
+    
+    f.write(r'\bottomrule')
+    f.write('\n')
+    f.write(r'\end{tabular}')
+    f.write('\n')
+    f.write(r'\end{table}')
+    f.write('\n')
+    f.close()
+    return

@@ -73,7 +73,6 @@ big_results = {}
 
 for sample_size in sample_size_set:
     print('Running {} simulations with sample size {}...'.format(B, sample_size))
-    
     f = open(outfile+'.txt', "a")
     f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
     f.close()
@@ -121,60 +120,12 @@ for sample_size in sample_size_set:
     y_hat = pd.DataFrame({'smoothed': results[1],
                           'standard': results[2]})
     
-    sigma_df = pd.DataFrame({'smoothed': sigma[:,0],
-                          'standard': sigma[:,1]})
+    sigma_df = pd.DataFrame({'smoothed': sigma[0],
+                             'standard': sigma[1]})
     
     report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
     big_results[sample_size] = report
     
     
 ########## PUTTING TOGETHER A LATEX TABLE ##########
-digits = 3
-metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
-
-k=0
-
-f = open(outfile+'.txt', "a")
-f.write('\n')
-f.write(r'\begin{table}')
-f.write('\n')
-
-for model in y_hat.columns:
-    k += 1
-    string = model
-    item = 'model'
-    sample_line = ' '
-    header = r'\begin{tabular}{l|'
-    for sample_size in sample_size_set:
-        sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+str(sample_size)+'}'
-        header = header + 'c*'+str(len(metrics_set))
-        for metric in metrics_set:
-            string = string+' & '+str(round(big_results[sample_size][metric][model], digits))
-            item = item+' & '+metric
-    string = string +'\\\\'
-    item = item +'\\\\'
-    sample_line = sample_line +'\\\\'
-    header = header + '}'
-    ### WRITING
-    if k == 1:
-        f.write(header)
-        f.write('\n')
-        f.write(r'\toprule')
-        f.write('\n')
-        f.write(sample_line)
-        f.write('\n')
-        f.write(item)
-        f.write('\n')
-        f.write(r'\hline')
-        f.write('\n')
-    f.write(string)
-    f.write('\n')
-
-f.write(r'\bottomrule')
-f.write('\n')
-f.write(r'\end{tabular}')
-f.write('\n')
-f.write(r'\end{table}')
-f.write('\n')
-f.close()
-            
+latex_table(big_results, file=outfile)
