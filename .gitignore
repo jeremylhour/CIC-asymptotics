@@ -133,5 +133,5 @@ dmypy.json
 
 # own folders
 output/*
-input_files/*
+input_configs/*
 files_list.txt
