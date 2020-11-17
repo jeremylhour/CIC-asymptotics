@@ -90,7 +90,7 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     f.write('\n')
     f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']:
-        f.write(metric+': \n ')
+        f.write(metric+': \n')
         for model in y_centered.columns:
             f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))
         f.write('\n')
