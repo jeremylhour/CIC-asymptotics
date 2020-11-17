@@ -17,11 +17,11 @@ if not os.path.exists('input_configs'):
 liste = 'files_list.txt'
 
 ########## INPUT PARAMETERS ##########
-nb_simu = 100        # Nb. of simulations, should be a scalar and the same for all files.
-sample_size = [50, 100]    # Sample size, should be an array
+nb_simu = 1000        # Nb. of simulations, should be a scalar and the same for all files.
+sample_size = [50, 100, 200, 500, 1000, 10000]    # Sample size, should be an array
 
 
-lambda_x = [.8]        # Parameter of exponential distribution for X
+lambda_x = [.4, .5, .6, .7, .8]        # Parameter of exponential distribution for X
 lambda_z = [1]         # Parameter of exponential distribution for Z
 alpha_y  = [2,3,4,5,8]          # Parameter of Pareto distribution for Y
 
