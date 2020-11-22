@@ -27,7 +27,7 @@ If 'parallel' is not install, run before:
 
 ```
 sudo apt-get update
-sudo apt-get parallel
+sudo apt-get install parallel
 ```
 
 ## Important folders:
