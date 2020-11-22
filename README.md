@@ -36,5 +36,5 @@ sudo apt-get install parallel
 
 ## Other folders:
 - input_configs: will be created when running create_yml_files.py](create_yml_files.py) and will contain the necessary YAML files,
-- output: will also be created when running [simulation.py](simulation.py). It will contain simulations results (log files, histograms, latex table).
-Both folders shouldn't be pushed to git repo.
+- output: will also be created when running [simulation.py](simulation.py). It will contain simulations results (log files, histograms, latex table) as well as saved raw results as pickle format (inside the "raw" folder).
+Both folders should not be pushed to git repo.
