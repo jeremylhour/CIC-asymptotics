@@ -23,6 +23,13 @@ Different outputs are produced from this scripts, among which the summary of the
 generate_latex.py
 ```
 
+If 'parallel' is not install, run before:
+
+```
+sudo apt-get update
+sudo apt-get parallel
+```
+
 ## Important folders:
 - [functions](functions/): contains all the necessary functions splitted by theme,
 - [test_scripts](test_scripts/): contains scripts that were used to develop the functions.
