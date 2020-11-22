@@ -17,6 +17,12 @@ python3 create_yml_files.py
 parallel -a files_list.txt python3 simulation.py
 ```
 
+Different outputs are produced from this scripts, among which the summary of the results in a pickle file. Then to aggregate them all and create a latex table, run:
+
+```
+generate_latex.py
+```
+
 ## Important folders:
 - [functions](functions/): contains all the necessary functions splitted by theme,
 - [test_scripts](test_scripts/): contains scripts that were used to develop the functions.
