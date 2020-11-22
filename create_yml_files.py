@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Create YML files for parallel computing
+Create YML files for parallel computing,
+from a main YML file.
 
 Created on Tue Nov 17 17:13:30 2020
 
@@ -17,13 +18,16 @@ if not os.path.exists('input_configs'):
 liste = 'files_list.txt'
 
 ########## INPUT PARAMETERS ##########
-nb_simu = 1000        # Nb. of simulations, should be a scalar and the same for all files.
-sample_size = [50, 100, 200, 500, 1000, 10000]    # Sample size, should be an array
+config_file = os.path.join(os.getcwd(),'main_config.yml')
 
-
-lambda_x = [.4, .5, .6, .7, .8]        # Parameter of exponential distribution for X
-lambda_z = [1]         # Parameter of exponential distribution for Z
-alpha_y  = [2,3,4,5,8]          # Parameter of Pareto distribution for Y
+with open(config_file, 'r') as stream:
+    config = yaml.safe_load(stream)
+    
+nb_simu = config['nb_simu']
+sample_size = config['sample_size']
+lambda_x = config['lambda_x']
+lambda_z = config['lambda_z']
+alpha_y = config['alpha_y']
 
 
 for i in lambda_x:

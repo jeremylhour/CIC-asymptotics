@@ -17,6 +17,7 @@ import random
 import time
 import yaml
 import math
+import pickle
 
 from statsmodels.distributions.empirical_distribution import ECDF
 
@@ -32,9 +33,12 @@ from scipy.stats import expon, pareto
 if not os.path.exists('output'):
     os.makedirs('output')
 
+if not os.path.exists('output/raw'):
+    os.makedirs('output/raw')
+    
 
 ########## LOAD YAML CONFIG ##########
-#config_file= os.path.join(os.getcwd(),'config_simulation.yml')
+#config_file= os.path.join(os.getcwd(),'example_config_simulation.yml')
 config_file= os.path.join(os.getcwd(),sys.argv[1])
 
 with open(config_file, 'r') as stream:
@@ -127,5 +131,10 @@ for sample_size in sample_size_set:
     big_results[sample_size] = report
     
     
+########## SAVING RESULTS OBJECT ##########
+pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
+pickle.dump(big_results, open(pickle_file+'.p','wb'))
+
 ########## PUTTING TOGETHER A LATEX TABLE ##########
-latex_table(big_results, file=outfile)
+#latex_table(big_results, file=outfile)
+
