@@ -23,7 +23,7 @@ Different outputs are produced from this scripts, among which the summary of the
 generate_latex.py
 ```
 
-If 'parallel' is not install, run before:
+If 'parallel' is not installed, run before:
 
 ```
 sudo apt-get update
