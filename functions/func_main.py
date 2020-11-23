@@ -18,17 +18,6 @@ import numpy as np
 from statsmodels.distributions.empirical_distribution import ECDF
 
 
-def estimator_known_ranks(outcome, ranks):
-    """
-    estimator_known_ranks:
-        computes the estimator (1), i.e. average of quantiles of the outcome for each rank
-        
-    :param outcome: np.array of the outcome
-    :param ranks: np.array of the ranks
-    """
-    return np.quantile(outcome, ranks).mean()
-
-
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
     """
     counterfactual ranks:
@@ -40,11 +29,11 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
     :param method: can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     """
     if method == "smoothed":
-        y = smoothed_ecdf(new_points=points_to_predict, x=points_for_distribution)
+        u_hat = smoothed_ecdf(new_points=points_to_predict, x=points_for_distribution)
     if method == "standard":
         ecdf = ECDF(points_for_distribution)
-        y = ecdf(points_to_predict)
-    return y
+        u_hat = ecdf(points_to_predict)
+    return u_hat
 
 
 def estimator_unknown_ranks(y, x, z, method="smoothed"):
@@ -113,4 +102,48 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
 
     return theta_hat, se/np.sqrt(len(y))
             
+
+def estimator_known_ranks(y, u):
+    """
+    estimator_known_ranks:
+        computes the estimator (1), i.e. average of quantiles of the outcome for each rank
+        
+    :param y: np.array of the outcome -- corresponds to outcome of untreated group at date 1.
+    :param u: np.array of the ranks
     
+    VERIFIER QUE C'EST BON!!!
+    """
+    
+    denominateur = kernel_density_estimator(x=np.quantile(y, u), data=y) 
+    counterfactual_y = np.quantile(y, u)
+    theta_hat = counterfactual_y.mean()    
+            
+    
+    """
+    compute_zeta:
+        compute vector zeta_i as in out paper,
+        similar to Q in Athey and Imbens (2006).
+    """
+    support = np.linspace(1/len(y), 1, len(y), endpoint=True) # = F_y(Y)
+    zeta = []
+    for point in support:
+        indicator = np.zeros(len(u))
+        indicator[np.where(point <= u)] = 1
+        inside_integral = -(indicator - u)/denominateur
+        zeta.append(inside_integral.mean())
+    zeta = np.array(zeta)
+    
+    
+    """
+    compute_epsilon:
+        Formula of Athey and Imbens (2006)
+    """
+    epsilon = -(counterfactual_y - theta_hat)
+    
+    
+    """
+    compute standard error
+    """
+    se = np.sqrt((zeta**2).mean() + (epsilon**2).mean())
+    
+    return theta_hat, se/np.sqrt(len(y))
