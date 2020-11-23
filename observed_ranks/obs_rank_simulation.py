@@ -127,7 +127,6 @@ for sample_size in sample_size_set:
     theta0 = results[0].mean()
     
     y_hat = pd.DataFrame({'standard': results[1]})
-    
     sigma_df = pd.DataFrame({'standard': sigma[0]})
     
     report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)

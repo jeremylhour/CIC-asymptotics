@@ -1,4 +1,4 @@
-nb_simu: 200        # Nb. of simulations
-sample_size: [100]  # Sample size, can be an array of multiple values
-alpha_u: .9        # Parameter of beta distribution for U
-alpha_y: 1          # Parameter of Pareto distribution for Y
+nb_simu: 200         # Nb. of simulations
+sample_size: [100]   # Sample size, can be an array of multiple values
+alpha_u: .9          # Parameter of beta distribution for U
+alpha_y: 8.          # Parameter of Pareto distribution for Y
