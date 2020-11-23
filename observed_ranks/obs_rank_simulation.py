@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Main file for simulation with observed ranks
+
 Created on Mon Nov 23 09:31:07 2020
 
 @author: jeremylhour
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Main file to run simulations
-
-Created on Mon Nov  9 12:07:05 2020
-
-@author: jeremylhour
-"""
-
 import sys, os
 sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
@@ -38,11 +29,11 @@ from scipy.stats import beta, pareto
    
 
 ########## SETTING UP FOLDER IF NEEDED ##########
-if not os.path.exists('output'):
-    os.makedirs('output')
+if not os.path.exists('output_obs_ranks'):
+    os.makedirs('output_obs_ranks')
 
-if not os.path.exists('output/raw'):
-    os.makedirs('output/raw')
+if not os.path.exists('output_obs_ranks/raw'):
+    os.makedirs('output_obs_ranks/raw')
     
 
 ########## LOAD YAML CONFIG ##########
@@ -66,7 +57,7 @@ print('--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply')
 
 
 ##### SAVING TO FILE ###########
-outfile = 'output/simulations_B='+str(B)+'_alpha_u='+str(alpha_u)+'_alpha_y='+str(alpha_y)
+outfile = 'output_obs_ranks/simulations_B='+str(B)+'_alpha_u='+str(alpha_u)+'_alpha_y='+str(alpha_y)
     
 f = open(outfile+'.txt', "a")
 f.write('\n')
@@ -134,9 +125,5 @@ for sample_size in sample_size_set:
     
     
 ########## SAVING RESULTS OBJECT ##########
-pickle_file = 'output/raw/simulations_B='+str(B)+'_alpha_u='+str(alpha_u)+'_alpha_y='+str(alpha_y)
+pickle_file = 'output_obs_ranks/raw/simulations_B='+str(B)+'_alpha_u='+str(alpha_u)+'_alpha_y='+str(alpha_y)
 pickle.dump(big_results, open(pickle_file+'.p','wb'))
-
-########## PUTTING TOGETHER A LATEX TABLE ##########
-#latex_table(big_results, file=outfile)
-
