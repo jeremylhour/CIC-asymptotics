@@ -13,6 +13,8 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 
 
+########## UNOBSERVED RANKS ##########
+
 def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
     """
     true_theta:
@@ -50,6 +52,43 @@ def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
     
     return y, z, x, theta0
+
+
+########## OBSERVED RANKS ##########
+
+def true_theta_observed_rank(distrib_y, distrib_u, size = 10000):
+    """
+    true_theta:
+        compute the true value of theta,
+        by simulation since analytical formula is not possible.
+        
+    :param distrib_y: distribution of Y
+    :param distrib_u: distribution of U
+    """
+    Q_y = distrib_y.ppf # Quantile function of Y
+    Q_u = distrib_u.ppf # Quantile function of U
+    
+    U = np.random.uniform(size=size)
+    U_tilde = Q_y(Q_u(U))
+    theta = U_tilde.mean()
+    return theta
+
+
+def generate_data_observed_rank(distrib_y, distrib_u, size = 1000):
+    """
+    generate_data:
+        generate data following the specified distributions.
+        Should be of class "rv_continuous" from scipy.stats
+        
+    :param distrib_y: distribution of Y, instance of rv_continuous
+    :param distrib_u: distribution of U, instance of rv_continuous
+    :param size: sample size for each vector
+    """        
+    y = distrib_y.ppf(np.random.uniform(size=size))  
+    u = distrib_u.ppf(np.random.uniform(size=size))  
+    theta0 = true_theta_observed_rank(distrib_y=distrib_y, distrib_u=distrib_u, size = 100000)
+    
+    return y, u, theta0
 
 
 def performance_report(y_hat, theta0, n_obs, **kwargs):
