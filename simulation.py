@@ -92,9 +92,9 @@ for sample_size in sample_size_set:
         sys.stdout.write("\r{0}".format(b))
         sys.stdout.flush()
         
-        y, z, x, theta0 =  generate_data(distrib_y = pareto(b=alpha_y, loc=1),
-                                         distrib_z = expon(scale=lambda_z),
-                                         distrib_x = expon(scale=lambda_x),
+        y, z, x, theta0 =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
+                                         distrib_z = expon(scale=1/lambda_z),
+                                         distrib_x = expon(scale=1/lambda_x),
                                          size = sample_size)
         # Estimator and S.E.
         theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed")
