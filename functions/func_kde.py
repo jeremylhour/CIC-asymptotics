@@ -24,7 +24,18 @@ def epanechnikov_kernel(x):
     return y
 
 
-def kernel_density_estimator(x, data):
+def gaussian_kernel(x):
+    """
+    gaussian_kernel:
+        Gaussian kernel function.
+        
+    :param x: np.array
+    """
+    y = np.exp(-x**2/2)/np.sqrt(2*np.pi)
+    return y
+
+
+def kernel_density_estimator(x, data, kernel=epanechnikov_kernel):
     """
     kernel_density_estimator:
         implement kernel density estimator with Silverman's rule of thumb,
@@ -32,9 +43,10 @@ def kernel_density_estimator(x, data):
     
     :param x: new points
     :param data: data to estimate the function
+    :param kernel: function for the kernel
         
     """
     h_silverman = 1.06 * data.std() / (len(data)**(1/5))
     y = (x[np.newaxis].T - data)/h_silverman # Broadcast to an array dimension len(x) * len(data)
-    y = epanechnikov_kernel(y)/h_silverman
+    y = kernel(y)/h_silverman
     return y.mean(axis=1)

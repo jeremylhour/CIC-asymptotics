@@ -2,4 +2,4 @@ nb_simu: 200        # Nb. of simulations
 sample_size: [100]    # Sample size, can be an array of multiple values
 lambda_x: .9        # Parameter of exponential distribution for X
 lambda_z: 1         # Parameter of exponential distribution for Z
-alpha_y: 1          # Parameter of Pareto distribution for Y
+alpha_y: 8          # Parameter of Pareto distribution for Y
