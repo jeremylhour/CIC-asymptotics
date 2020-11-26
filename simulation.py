@@ -83,7 +83,7 @@ for sample_size in sample_size_set:
 
     random.seed(999)
 
-    results = np.zeros(shape=(B, 3))
+    results = np.zeros(shape=(B, 2))
     sigma = np.zeros(shape=(B, 2))
 
     start_time = time.time()
@@ -92,7 +92,7 @@ for sample_size in sample_size_set:
         sys.stdout.write("\r{0}".format(b))
         sys.stdout.flush()
         
-        y, z, x, theta0 =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
+        y, z, x =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
                                          distrib_z = expon(scale=1/lambda_z),
                                          distrib_x = expon(scale=1/lambda_x),
                                          size = sample_size)
@@ -101,13 +101,13 @@ for sample_size in sample_size_set:
         theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
         
         # Collecting results
-        results[b,] = [theta0, theta_smooth, theta_standard]
+        results[b,] = [theta_smooth, theta_standard]
         sigma[b,] = [sigma_smooth, sigma_standard]
     
         # Checking division error
         if math.isinf(sigma_smooth):
             print(' -- error for this iteration')
-            results[b,] = [np.nan]*3
+            results[b,] = [np.nan]*2
             sigma[b,] = [np.nan]*2
 
     print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
@@ -119,10 +119,10 @@ for sample_size in sample_size_set:
     sigma = pd.DataFrame(sigma)
     sigma.dropna(axis=0, inplace=True)
     
-    theta0 = results[0].mean()
+    theta0 = analytical_theta(alpha_y = alpha_y, lambda_z = lambda_z, lambda_x = lambda_x)
     
-    y_hat = pd.DataFrame({'smoothed': results[1],
-                          'standard': results[2]})
+    y_hat = pd.DataFrame({'smoothed': results[0],
+                          'standard': results[1]})
     
     sigma_df = pd.DataFrame({'smoothed': sigma[0],
                              'standard': sigma[1]})

@@ -19,12 +19,8 @@ from scipy.stats import expon, pareto
 
 
 
-def analytical_theta(lambda_x, alpha_y):
-    return 1/(alpha_y*lambda_x - 1)
-
-
 ########## PARAM ##########
-lambda_z = 1
+lambda_z = 1.5
 lambda_x = .9
 alpha_y = 3
 
@@ -33,20 +29,24 @@ print('Parameter values give b_2={:.2f}'.format(1-lambda_x/lambda_z))
 print('Parameter values give d_2={:.2f}'.format(1/alpha_y))
 print('So b_2+d_2={:.2f}'.format(1-lambda_x/lambda_z+1/alpha_y))
 
+if lambda_z > alpha_y*lambda_x:
+    print('Analytical formula is not working in that case.')
+
 ########## SIMULATED ##########
 theta_sim = true_theta(distrib_y = pareto(b=alpha_y, loc=-1),
                        distrib_z = expon(scale=1/lambda_z),
                        distrib_x = expon(scale=1/lambda_x),
-                       size = 100000)
+                       size = 1000000)
 
-print(theta_sim)
+print('Theta, value computed by Monte Carlo: {:.3f}'.format(theta_sim))
 
 ########## ANALYTICAL ##########
 
-theta_an = analytical_theta(lambda_x = lambda_x,
-                            alpha_y = alpha_y)
+theta_an = analytical_theta(alpha_y = alpha_y,
+                            lambda_z = lambda_z,
+                            lambda_x = lambda_x)
 
-print(theta_an)
+print('Theta, value computed analytically: {:.3f}'.format(theta_an))
 
 
 

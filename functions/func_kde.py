@@ -35,7 +35,7 @@ def gaussian_kernel(x):
     return y
 
 
-def kernel_density_estimator(x, data, kernel=epanechnikov_kernel):
+def kernel_density_estimator(x, data, kernel=gaussian_kernel):
     """
     kernel_density_estimator:
         implement kernel density estimator with Silverman's rule of thumb,

@@ -35,6 +35,20 @@ def true_theta(distrib_y, distrib_z, distrib_x, size = 10000):
     return theta
 
 
+def analytical_theta(alpha_y, lambda_z, lambda_x):
+    """
+    analytical_theta:
+        compute the true value of theta,
+        using an analytical formula.
+    
+    :param alpha_y:
+    :param lambda_z:
+    :param lambda_x:
+    """
+    theta = 1/(alpha_y*lambda_x/lambda_z - 1)
+    return theta
+
+
 def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     """
     generate_data:
@@ -49,9 +63,9 @@ def generate_data(distrib_y, distrib_z, distrib_x, size = 1000):
     y = distrib_y.ppf(np.random.uniform(size=size))  
     z = distrib_z.ppf(np.random.uniform(size=size)) 
     x = distrib_x.ppf(np.random.uniform(size=size))   
-    theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
+    #theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
     
-    return y, z, x, theta0
+    return y, z, x
 
 
 ########## OBSERVED RANKS ##########
