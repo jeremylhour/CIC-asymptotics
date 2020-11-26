@@ -36,7 +36,7 @@ if lambda_z > alpha_y*lambda_x:
 theta_sim = true_theta(distrib_y = pareto(b=alpha_y, loc=-1),
                        distrib_z = expon(scale=1/lambda_z),
                        distrib_x = expon(scale=1/lambda_x),
-                       size = 1000000)
+                       size = 100000)
 
 print('Theta, value computed by Monte Carlo: {:.3f}'.format(theta_sim))
 
@@ -49,11 +49,12 @@ theta_an = analytical_theta(alpha_y = alpha_y,
 print('Theta, value computed analytically: {:.3f}'.format(theta_an))
 
 
-
+########## CHECK FOR WHAT VALUES TO CHOOSE ###########
+lambda_z = 1
 
 lambda_x = np.array([.2, .3, .5, .8, .9])
-b_2 = 1-lambda_x
-alpha_y = np.array([1, 2, 4, 6, 8])
+b_2 = 1-lambda_x 
+alpha_y = np.array([1.5, 2, 3, 4, 6, 7, 10])
 d_2 = 1/alpha_y
 
-b_2+d_2[np.newaxis].T
+print(b_2+d_2[np.newaxis].T)

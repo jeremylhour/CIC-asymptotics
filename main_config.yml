@@ -1,5 +1,5 @@
 nb_simu: 10000        # Nb. of simulations
 sample_size: [100, 200, 500, 1000]    # Sample size, can be an array of multiple values
-lambda_x: [.4,.6, .8, 1]        # Parameter of exponential distribution for X
+lambda_x: [.2, .3, .5, .8, .9]        # Parameter of exponential distribution for X
 lambda_z: [1]         # Parameter of exponential distribution for Z
-alpha_y: [1, 2, 4, 5, 8]          # Parameter of Pareto distribution for Y
+alpha_y: [1.5, 2, 3, 4, 6, 7, 10]          # Parameter of Pareto distribution for Y

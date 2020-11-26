@@ -33,15 +33,18 @@ alpha_y = config['alpha_y']
 for i in lambda_x:
     for j in lambda_z:
         for k in alpha_y:
-            file_name = 'input_configs/lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)+'.yml'
-            f = open(file_name, "w")
-            f.write('nb_simu: {}       # Nb. of simulations, should be a scalar and the same for all files.\n'.format(nb_simu))
-            f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
-            f.write('lambda_x: {}        # Parameter of exponential distribution for X\n'.format(i))
-            f.write('lambda_z: {}         # Parameter of exponential distribution for Z\n'.format(j))
-            f.write('alpha_y: {}         # Parameter of Pareto distribution for Y\n'.format(k))
-            f.close()
+            if(1-i/j + 1/k < 1):
+                file_name = 'input_configs/lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)+'.yml'
+                f = open(file_name, "w")
+                f.write('nb_simu: {}       # Nb. of simulations, should be a scalar and the same for all files.\n'.format(nb_simu))
+                f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
+                f.write('lambda_x: {}        # Parameter of exponential distribution for X\n'.format(i))
+                f.write('lambda_z: {}         # Parameter of exponential distribution for Z\n'.format(j))
+                f.write('alpha_y: {}         # Parameter of Pareto distribution for Y\n'.format(k))
+                f.close()
             
-            g = open(liste,'a')
-            g.write(file_name+'\n')
-            g.close()
+                g = open(liste,'a')
+                g.write(file_name+'\n')
+                g.close()
+            else:
+                print('Will not consider DGP with lambda_x='+str(i)+', lambda_z='+str(j)+', and alpha_y='+str(k)+' since true value is not finite.')
