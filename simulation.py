@@ -56,6 +56,7 @@ print('Parameter values give b_2={:.2f}'.format(1-lambda_x/lambda_z))
 print('Parameter values give d_2={:.2f}'.format(1/alpha_y))
 print('So b_2+d_2={:.2f}'.format(1-lambda_x/lambda_z+1/alpha_y))
 print('--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply')
+print('--- and below 1 for theta_0 to be finite.')
 
 
 ##### SAVING TO FILE ###########
