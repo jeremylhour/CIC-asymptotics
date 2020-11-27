@@ -42,7 +42,11 @@ for i in lambda_x:
     for j in lambda_z:
         for k in alpha_y:
             pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)
-            result = pickle.load(open(pickle_file+'.p','rb'))
+            try:
+                result = pickle.load(open(pickle_file+'.p','rb'))
+            except:
+                continue
+            
             param_line = r' & \multicolumn{'+str(len(metrics_set)*len(result))+'}{c}{'+'$\lambda_X$='+str(i)+', $\lambda_Z$='+str(j)+r', $\alpha_Y$='+str(k)+' -- $b_2+d_2$='+ str(round(1-i/j+1/k, 2))+'}'  
             param_line = param_line+'\\\\'
             for model in models:
