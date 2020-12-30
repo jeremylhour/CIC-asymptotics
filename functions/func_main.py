@@ -48,7 +48,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     :param method: can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     :param se_method: can be "kernel" or "lewbel-schennach" dependant on the type of method for computing 1/f(F^{-1}(u_hat)).
     
-    WARNING: "lewbel-schennach" requires "smoothed" to work
+    WARNING: "lewbel-schennach" requires "smoothed" to work (?)
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=x, data=z)
@@ -69,7 +69,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
         
     elif se_method == "lewbel-schennach":
-        u_hat = sorted(u_hat)
+        u_hat = sorted(np.unique(u_hat)) # order and remove duplicates
         F_inverse = np.quantile(y, u_hat)
         inv_density = (np.delete(F_inverse,0) - np.delete(F_inverse,-1)) / (np.delete(u_hat,0) - np.delete(u_hat,-1))
         u_hat = (np.delete(u_hat,0) + np.delete(u_hat,-1))/2 # replaces u_hat by the average of two sorted

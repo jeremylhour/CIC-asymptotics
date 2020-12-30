@@ -165,7 +165,7 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     return report
 
 
-def latex_table(results, file, models=['standard','smoothed'], digits=3):
+def latex_table(results, file, models=['standard','smoothed', 'smoothed/lewbel-schennach'], digits=3):
     """
     latex_table:
         outputs a latex table from a list of results

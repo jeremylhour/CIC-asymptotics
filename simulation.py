@@ -84,8 +84,8 @@ for sample_size in sample_size_set:
 
     random.seed(999)
 
-    results = np.zeros(shape=(B, 2))
-    sigma = np.zeros(shape=(B, 2))
+    results = np.zeros(shape=(B, 3))
+    sigma = np.zeros(shape=(B, 3))
 
     start_time = time.time()
 
@@ -100,16 +100,17 @@ for sample_size in sample_size_set:
         # Estimator and S.E.
         theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed")
         theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
-        
+        theta_smooth_2, sigma_ls = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach")
+
         # Collecting results
-        results[b,] = [theta_smooth, theta_standard]
-        sigma[b,] = [sigma_smooth, sigma_standard]
+        results[b,] = [theta_smooth, theta_standard, theta_smooth_2]
+        sigma[b,] = [sigma_smooth, sigma_standard, sigma_ls]
     
         # Checking division error
-        if math.isinf(sigma_smooth):
+        if math.isinf(sigma_smooth) or np.isnan(sigma_ls):
             print(' -- error for this iteration')
-            results[b,] = [np.nan]*2
-            sigma[b,] = [np.nan]*2
+            results[b,] = [np.nan]*3
+            sigma[b,] = [np.nan]*3
 
     print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
 
@@ -123,10 +124,12 @@ for sample_size in sample_size_set:
     theta0 = analytical_theta(alpha_y = alpha_y, lambda_z = lambda_z, lambda_x = lambda_x)
     
     y_hat = pd.DataFrame({'smoothed': results[0],
-                          'standard': results[1]})
+                          'standard': results[1],
+                          'smoothed_lewbel-schennach': results[2]})
     
     sigma_df = pd.DataFrame({'smoothed': sigma[0],
-                             'standard': sigma[1]})
+                             'standard': sigma[1],
+                             'smoothed_lewbel-schennach': sigma[2]})
     
     report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
     big_results[sample_size] = report
