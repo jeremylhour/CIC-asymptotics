@@ -36,28 +36,45 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
     return u_hat
 
 
-def estimator_unknown_ranks(y, x, z, method="smoothed"):
+def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     """
     estimator_unknown_ranks:
         computes the estimator (1), i.e. average of quantiles of the outcome for each estimated rank,
-        and corresponding standard error
+        and corresponding standard error. "lewbel-schennach" implement estimation of s.e. based on Lewbel and Schennach's paper
         
     :param y: np.array of the outcome -- corresponds to outcome of untreated group at date 1.
     :param x: np.array of the points to project -- corresponds to outcome of treated group at date 0.
     :param z: np.array of the points for distribution -- corresponds to outcome ot untreated group at date 1.
     :param method: can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+    :param se_method: can be "kernel" or "lewbel-schennach" dependant on the type of method for computing 1/f(F^{-1}(u_hat)).
+    
+    WARNING: "lewbel-schennach" requires "smoothed" to work
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=x, data=z)
     if method == "standard":
         ecdf = ECDF(z)
         u_hat = ecdf(x)
-    
-    denominateur = kernel_density_estimator(x=np.quantile(y, u_hat), data=y) 
+        
+    """
+    Estimator of theta
+    """
     counterfactual_y = np.quantile(y, u_hat)
-    theta_hat = counterfactual_y.mean()    
-            
+    theta_hat = counterfactual_y.mean() 
     
+    """
+    Computes inv_density depending on the method of choice.
+    """
+    if se_method == "kernel":
+        inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
+        
+    elif se_method == "lewbel-schennach":
+        u_hat = sorted(u_hat)
+        F_inverse = np.quantile(y, u_hat)
+        inv_density = (np.delete(F_inverse,0) - np.delete(F_inverse,-1)) / (np.delete(u_hat,0) - np.delete(u_hat,-1))
+        u_hat = (np.delete(u_hat,0) + np.delete(u_hat,-1))/2 # replaces u_hat by the average of two sorted
+
+
     """
     compute_zeta:
         compute vector zeta_i as in out paper,
@@ -68,7 +85,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
     for point in support:
         indicator = np.zeros(len(u_hat))
         indicator[np.where(point <= u_hat)] = 1
-        inside_integral = -(indicator - u_hat)/denominateur
+        inside_integral = -(indicator - u_hat)*inv_density
         zeta.append(inside_integral.mean())
     zeta = np.array(zeta)
     
@@ -83,9 +100,10 @@ def estimator_unknown_ranks(y, x, z, method="smoothed"):
     for point in support:
         indicator = np.zeros(len(u_hat))
         indicator[np.where(point <= u_hat)] = 1
-        inside_integral = (indicator-u_hat)/denominateur
+        inside_integral = (indicator-u_hat)*inv_density
         phi.append(inside_integral.mean())
     phi = np.array(phi)
+    
     
     
     """
