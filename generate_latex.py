@@ -28,7 +28,7 @@ alpha_y = config['alpha_y']
 
 ########## CREATING TABLE ##########
 digits = 3
-models = ['standard','smoothed']
+models = ['standard','smoothed','smoothed_lewbel-schennach']
 metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
 
 counter = 0
