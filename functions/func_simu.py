@@ -105,7 +105,7 @@ def generate_data_observed_rank(distrib_y, distrib_u, size = 1000):
     return y, u, theta0
 
 
-def performance_report(y_hat, theta0, n_obs, **kwargs):
+def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     """
     performance_report:
         creates the report for simulations,
@@ -150,17 +150,18 @@ def performance_report(y_hat, theta0, n_obs, **kwargs):
     f.close()
     
     ##### SAVING HISTOGRAM #####
-    num_bins = 50
-    for model in y_centered.columns:
-        fig, ax = plt.subplots()
-        n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
-        norm_fit = norm.pdf(bins, scale=np.sqrt(n_obs)*sigma[model].mean())
-        ax.plot(bins, norm_fit, '--')
-        ax.set_xlabel(r'$n^{1/2}$ ($\hat \theta$ - $\theta_0$)')
-        ax.set_ylabel('Probability density')
-        ax.set_title(r'Histogram for model: '+model)
-        fig.tight_layout()
-        plt.savefig(file+'_n='+str(n_obs)+'_'+model+'.jpg',dpi=(96))
+    if histograms:
+        num_bins = 50
+        for model in y_centered.columns:
+            fig, ax = plt.subplots()
+            n, bins, patches = ax.hist(np.sqrt(n_obs)*y_centered[model], num_bins, density=1)
+            norm_fit = norm.pdf(bins, scale=np.sqrt(n_obs)*sigma[model].mean())
+            ax.plot(bins, norm_fit, '--')
+            ax.set_xlabel(r'$n^{1/2}$ ($\hat \theta$ - $\theta_0$)')
+            ax.set_ylabel('Probability density')
+            ax.set_title(r'Histogram for model: '+model)
+            fig.tight_layout()
+            plt.savefig(file+'_n='+str(n_obs)+'_'+model+'.jpg',dpi=(96))
     
     return report
 

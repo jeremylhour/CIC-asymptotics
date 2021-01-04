@@ -62,6 +62,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     counterfactual_y = np.quantile(y, u_hat)
     theta_hat = counterfactual_y.mean() 
     
+    
     """
     Computes inv_density depending on the method of choice.
     """
@@ -72,7 +73,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         u_hat = sorted(np.unique(u_hat)) # order and remove duplicates
         F_inverse = np.quantile(y, u_hat)
         inv_density = (np.delete(F_inverse,0) - np.delete(F_inverse,-1)) / (np.delete(u_hat,0) - np.delete(u_hat,-1))
-        u_hat = (np.delete(u_hat,0) + np.delete(u_hat,-1))/2 # replaces u_hat by the average of two sorted
+        u_hat = (np.delete(u_hat,0) + np.delete(u_hat,-1))/2 # replaces u_hat by the average of two consecutive u_hat
 
 
     """
@@ -103,14 +104,13 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         inside_integral = (indicator-u_hat)*inv_density
         phi.append(inside_integral.mean())
     phi = np.array(phi)
-    
-    
+        
     
     """
     compute_epsilon:
         Formula of Athey and Imbens (2006)
     """
-    epsilon = -(counterfactual_y - theta_hat)
+    epsilon = theta_hat - counterfactual_y
     
     
     """

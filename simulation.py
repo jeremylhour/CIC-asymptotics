@@ -21,10 +21,10 @@ import pickle
 
 from statsmodels.distributions.empirical_distribution import ECDF
 
-from func_main import *
-from func_ecdf import *
-from func_simu import *
-from func_kde import *
+from func_main import estimator_unknown_ranks
+from func_ecdf import smoothed_ecdf
+from func_simu import analytical_theta, generate_data, performance_report 
+from func_kde import kernel_density_estimator, gaussian_kernel, epanechnikov_kernel
 
 from scipy.stats import expon, pareto
    
