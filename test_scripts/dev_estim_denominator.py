@@ -14,9 +14,9 @@ sys.path.append('/Users/jeremylhour/Documents/code/CIC-asymptotics/functions/')
 import numpy as np
 from scipy.stats import expon, pareto
 
-from func_ecdf import *
-from func_kde import *
-from func_simu import *
+from func_ecdf import smoothed_ecdf
+from func_simu import analytical_theta, generate_data, performance_report 
+from func_kde import kernel_density_estimator, gaussian_kernel, epanechnikov_kernel
 
 import random
 import time

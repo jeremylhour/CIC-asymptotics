@@ -138,7 +138,3 @@ for sample_size in sample_size_set:
 ########## SAVING RESULTS OBJECT ##########
 pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
 pickle.dump(big_results, open(pickle_file+'.p','wb'))
-
-########## PUTTING TOGETHER A LATEX TABLE ##########
-#latex_table(big_results, file=outfile)
-
