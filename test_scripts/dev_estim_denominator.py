@@ -130,6 +130,10 @@ estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel")
 estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach", remove_duplicates=True)
 estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach", remove_duplicates=False)
 
+estimator_unknown_ranks(y, x, z, method="standard", se_method="lewbel-schennach", remove_duplicates=True)
+estimator_unknown_ranks(y, x, z, method="standard", se_method="lewbel-schennach", remove_duplicates=False)
+
+
 ### Simulations test
 random.seed(999)
 
@@ -137,7 +141,7 @@ B = 1000
 lambda_x = .8
 lambda_z = 1
 alpha_y = 8
-sample_size=200
+sample_size = 200
 
 results = np.zeros(shape=(B, 3))
 sigma = np.zeros(shape=(B, 3))
@@ -185,6 +189,6 @@ y_hat = pd.DataFrame({'smoothed': results[0],
     
 sigma_df = pd.DataFrame({'smoothed': sigma[0],
                          'smoothed_lewbel-schennach': sigma[1],
-                         'smoothed_lewbel_duplicates': sigma[2]})
+                         'smoothed_lewbel-schennach_duplicates': sigma[2]})
     
-report = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file='dump.txt')
+report = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file='dump')
