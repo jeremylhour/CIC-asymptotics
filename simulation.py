@@ -73,6 +73,7 @@ f.close()
 
 
 ########## CORE CODE ##########
+nb_estimators = 5
 sample_size_set = config['sample_size']
 big_results = {}
 
@@ -84,8 +85,8 @@ for sample_size in sample_size_set:
 
     random.seed(999)
 
-    results = np.zeros(shape=(B, 3))
-    sigma = np.zeros(shape=(B, 3))
+    results = np.zeros(shape=(B, nb_estimators))
+    sigma = np.zeros(shape=(B, nb_estimators))
 
     start_time = time.time()
 
@@ -98,19 +99,22 @@ for sample_size in sample_size_set:
                                          distrib_x = expon(scale=1/lambda_x),
                                          size = sample_size)
         # Estimator and S.E.
-        theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed")
         theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
-        theta_smooth_2, sigma_ls = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach")
+        theta_standard_x, sigma_standard_x = estimator_unknown_ranks(y, x, z, method="standard", se_method="xavier")
+        
+        theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel")
+        theta_ls, sigma_ls = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach")
+        theta_x, sigma_x = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="xavier")
 
         # Collecting results
-        results[b,] = [theta_smooth, theta_standard, theta_smooth_2]
-        sigma[b,] = [sigma_smooth, sigma_standard, sigma_ls]
+        results[b,] = [theta_standard, theta_standard_x, theta_smooth, theta_ls, theta_x]
+        sigma[b,] = [sigma_standard, sigma_standard_x, sigma_smooth, sigma_ls, sigma_x]
     
         # Checking division error
         if math.isinf(sigma_smooth) or np.isnan(sigma_ls):
             print(' -- error for this iteration')
-            results[b,] = [np.nan]*3
-            sigma[b,] = [np.nan]*3
+            results[b,] = [np.nan]*nb_estimators
+            sigma[b,] = [np.nan]*nb_estimators
 
     print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
 
@@ -123,13 +127,17 @@ for sample_size in sample_size_set:
     
     theta0 = analytical_theta(alpha_y = alpha_y, lambda_z = lambda_z, lambda_x = lambda_x)
     
-    y_hat = pd.DataFrame({'smoothed': results[0],
-                          'standard': results[1],
-                          'smoothed_lewbel-schennach': results[2]})
+    y_hat = pd.DataFrame({'standard_kernel': results[0],
+                          'standard_xavier': results[1],
+                          'smooth_kernel': results[2],
+                          'smooth_ls': results[3],
+                          'smooth_xavier': results[4]})
     
-    sigma_df = pd.DataFrame({'smoothed': sigma[0],
-                             'standard': sigma[1],
-                             'smoothed_lewbel-schennach': sigma[2]})
+    sigma_df = pd.DataFrame({'standard_kernel': sigma[0],
+                             'standard_xavier': sigma[1],
+                             'smooth_kernel': sigma[2],
+                             'smooth_ls': sigma[3],
+                             'smooth_xavier': sigma[4]})
     
     report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
     big_results[sample_size] = report
