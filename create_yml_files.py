@@ -29,6 +29,7 @@ lambda_x = config['lambda_x']
 lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
+print('Creating requested YAML files...')
 
 for i in lambda_x:
     for j in lambda_z:
@@ -47,4 +48,4 @@ for i in lambda_x:
                 g.write(file_name+'\n')
                 g.close()
             else:
-                print('Will not consider DGP with lambda_x='+str(i)+', lambda_z='+str(j)+', and alpha_y='+str(k)+' since true value is not finite.')
+                print('Bad DGP : lambda_x='+str(i)+', lambda_z='+str(j)+', alpha_y='+str(k)+' -- true value theta_0 is not finite.')
