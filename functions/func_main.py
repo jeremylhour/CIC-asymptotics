@@ -46,15 +46,14 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     :param x: np.array of the points to project -- corresponds to outcome of treated group at date 0.
     :param z: np.array of the points for distribution -- corresponds to outcome ot untreated group at date 1.
     :param method: can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
-    :param se_method: can be "kernel" or "lewbel-schennach" dependant on the type of method for computing 1/f(F^{-1}(u_hat)).
-    
-    WARNING: "lewbel-schennach" requires "smoothed" to work (?)
+    :param se_method: can be "kernel", "lewbel-schennach" or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=x, data=z)
     if method == "standard":
         ecdf = ECDF(z)
         u_hat = ecdf(x)
+     
         
     """
     Estimator of theta
@@ -68,13 +67,31 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     """
     if se_method == "kernel":
         inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
+        u_hat_count = np.ones(len(u_hat))
         
     elif se_method == "lewbel-schennach":
-        u_hat = sorted(np.unique(u_hat)) # order and remove duplicates
+        u_hat = np.unique(sorted(u_hat)) # order and remove duplicates
         F_inverse = np.quantile(y, u_hat)
         inv_density = (np.delete(F_inverse,0) - np.delete(F_inverse,-1)) / (np.delete(u_hat,0) - np.delete(u_hat,-1))
         u_hat = (np.delete(u_hat,0) + np.delete(u_hat,-1))/2 # replaces u_hat by the average of two consecutive u_hat
-
+    
+    elif se_method == "xavier":
+        u_hat = sorted(u_hat)
+        # find distinct values just above and just below
+        ub, lb  = [], []
+        for u in u_hat:
+            if u == max(u_hat):
+                ub.append(u)
+            else:
+                ub.append(min(i for i in u_hat if i > u))
+        
+            if u == min(u_hat):
+                lb.append(u)
+            else:
+                lb.append(max(i for i in u_hat if i < u))
+        ub, lb = np.array(ub), np.array(lb)
+        inv_density = (np.quantile(y, ub) - np.quantile(y, lb)) / (ub - lb)
+        
 
     """
     compute_zeta:
