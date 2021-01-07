@@ -28,7 +28,7 @@ alpha_y = config['alpha_y']
 
 ########## CREATING TABLE ##########
 digits = 3
-models = ['standard','smoothed','smoothed_lewbel-schennach']
+models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier']
 metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
 
 counter = 0
@@ -79,7 +79,7 @@ for i in lambda_x:
                     f.write('\n')
                     f.write(r'\hline')
                     f.write('\n')
-                if model =='standard':
+                if model == models[0]:
                     f.write(r'\hline')
                     f.write('\n')
                     f.write(param_line)
