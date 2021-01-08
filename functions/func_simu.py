@@ -113,7 +113,7 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
         
     :param y_hat: B x K np.array of B simulations for K estimators
     :param theta0: scalar, true value of theta
-    :param n_obs: sample size usez during simulations.
+    :param n_obs: sample size used during simulations.
     """
     sigma = kwargs.get('sigma', np.ones(y_hat.shape))
     file = kwargs.get('file', 'default_output_file')
