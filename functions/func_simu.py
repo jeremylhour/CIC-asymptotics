@@ -128,11 +128,12 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     report['RMSE']   = y_centered.std(axis=0)
     report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0)
     report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0)
+    report['CI size'] = 2*norm.ppf(0.975)*sigma.mean(axis=0)
     
     print('Theta_0: {:.2f}'.format(report['theta0']))
     print("Number of simulations: {} \n".format(report['n_simu']))
     print("Sample size: {} \n".format(report['n_obs']))
-    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']:
+    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         print(metric+': ')
         for model in y_centered.columns:
             print('- {}: {:.4f}'.format(model, report[metric][model]))
@@ -142,7 +143,7 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     f = open(file+'.txt', "a")
     f.write('\n')
     f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
-    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']:
+    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         f.write(metric+': \n')
         for model in y_centered.columns:
             f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))

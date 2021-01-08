@@ -29,7 +29,13 @@ alpha_y = config['alpha_y']
 ########## CREATING TABLE ##########
 digits = 3
 models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier']
-metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
+metrics_set = ['bias', 'RMSE', 'Coverage rate', 'CI size']
+
+color_dico = dict({.2 : 'LightCyan',
+                   .3 : 'LightRed',
+                   .5 : 'LightGreen',
+                   .8 : 'LightYellow',
+                   .9 : 'LightBlue'})
 
 counter = 0
 
@@ -55,7 +61,7 @@ for i in lambda_x:
                 string = model
                 item = 'model'
                 sample_line = ' '
-                header = r'\begin{tabular}{l|'
+                header = r'\begin{longtable}{l|'
                 for sample_size in result:
                     sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+'n='+str(sample_size)+'}'
                     header = header + ('c'*len(metrics_set))
@@ -71,6 +77,8 @@ for i in lambda_x:
                 if counter == 1:
                     f.write(header)
                     f.write('\n')
+                    f.write(r'\caption{}\\')
+                    f.write('\n')
                     f.write(r'\toprule')
                     f.write('\n')
                     f.write(sample_line)
@@ -84,14 +92,13 @@ for i in lambda_x:
                     f.write('\n')
                     f.write(param_line)
                     f.write('\n')
-
+                
+                f.write(r'\rowcolor{'+color_dico[i]+'} ')
                 f.write(string)
                 f.write('\n')
 
 f.write(r'\bottomrule')
 f.write('\n')
-f.write(r'\end{tabular}')
-f.write('\n')
-f.write(r'\end{table}')
+f.write(r'\end{longtable}')
 f.write('\n')
 f.close()
