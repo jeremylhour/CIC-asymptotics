@@ -1,5 +1,6 @@
 sudo apt-get update
 sudo apt-get install parallel
+sudo apt-get install zip
 
 git clone https://github.com/jlhourENSAE/CIC-asymptotics.git
 
@@ -14,6 +15,4 @@ parallel -a files_list.txt python3 simulation.py
 python3 generate_latex.py
 
 # zipping output
-sudo apt-get install parallel
-
-zip -r zip -r output.zip output/ 
+zip -r output.zip output/ 
