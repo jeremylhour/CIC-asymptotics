@@ -12,13 +12,13 @@ Created on Tue Nov 17 17:13:30 2020
 import sys, os
 import yaml
 
-if not os.path.exists('input_configs'):
-    os.makedirs('input_configs')
+if not os.path.exists('input_configs_EXPONENTIAL'):
+    os.makedirs('input_configs_EXPONENTIAL')
 
 liste = 'files_list.txt'
 
 ########## INPUT PARAMETERS ##########
-config_file = os.path.join(os.getcwd(),'main_config.yml')
+config_file = os.path.join(os.getcwd(),'EXPONENTIAL_config.yml')
 
 with open(config_file, 'r') as stream:
     config = yaml.safe_load(stream)
@@ -35,7 +35,7 @@ for i in lambda_x:
     for j in lambda_z:
         for k in alpha_y:
             if(1-i/j + 1/k < 1):
-                file_name = 'input_configs/lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)+'.yml'
+                file_name = 'input_configs_EXPONENTIAL/lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)+'.yml'
                 f = open(file_name, "w")
                 f.write('nb_simu: {}       # Nb. of simulations, should be a scalar and the same for all files.\n'.format(nb_simu))
                 f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
