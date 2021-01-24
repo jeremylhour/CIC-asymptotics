@@ -135,6 +135,7 @@ dmypy.json
 # own folders
 output/*
 input_configs/*
+input_configs_EXPONENTIAL/*
 input_configs_GAUSSIAN/*
 files_list.txt
 files_list_GAUSSIAN.txt
