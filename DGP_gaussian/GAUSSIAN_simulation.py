@@ -43,7 +43,8 @@ if not os.path.exists('output/raw'):
     
 
 ########## LOAD YAML CONFIG ##########
-config_file= os.path.join(os.getcwd(),'example_config_gaussian.yml')
+#config_file = os.path.join(os.getcwd(),'example_config_gaussian.yml')
+config_file = os.path.join(os.getcwd(),sys.argv[1])
 
 with open(config_file, 'r') as stream:
     config = yaml.safe_load(stream)
@@ -66,10 +67,10 @@ outfile = 'output/gaussian_simulations_B='+str(B)+'_mu_x='+str(mu_x)+'_variance_
 
 f = open(outfile+'.txt', "a")
 f.write('\n')
-f.write('mu_x={:.2f}'.format(mu_x))
-f.write('variance_x={:.2f}'.format(variance_x))
-f.write('Parameter values give b_1={:.2f}'.format(1-variance_x))
-f.write('Parameter values give b_2={:.2f}'.format(1-variance_x))
+f.write('mu_x={:.2f} \n'.format(mu_x))
+f.write('variance_x={:.2f} \n'.format(variance_x))
+f.write('Parameter values give b_1={:.2f} \n'.format(1-variance_x))
+f.write('Parameter values give b_2={:.2f} \n'.format(1-variance_x))
 f.write('\n')
 f.close()
 
