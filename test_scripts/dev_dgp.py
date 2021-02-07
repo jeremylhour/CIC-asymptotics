@@ -29,7 +29,7 @@ x_eval = np.linspace(.98, 1, n, endpoint=False)
 sigma0 = .2
 sigma1 = 1
 
-y, z = density(x_eval, delta=-2, sigma0=sigma0, sigma1=sigma1)
+y, z = density(x_eval, delta=0, sigma0=sigma0, sigma1=sigma1)
 
 print('b2 = '+str(1-sigma0**2/sigma1**2))
 

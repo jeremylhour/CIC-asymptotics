@@ -67,14 +67,13 @@ print('--- and below 1 for theta_0 to be finite.')
 ##### SAVING TO FILE ###########
 outfile = 'output/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
     
-f = open(outfile+'.txt', "a")
-f.write('\n')
-f.write('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f} \n'.format(lambda_x, lambda_z, alpha_y),)
-f.write('Parameter values give b_2={:.2f} \n'.format(1-lambda_x/lambda_z))
-f.write('Parameter values give d_2={:.2f} \n'.format(1/alpha_y))
-f.write('So b_2+d_2={:.2f} \n'.format(1-lambda_x/lambda_z+1/alpha_y))
-f.write('\n')
-f.close()
+with open(outfile+'.txt', "a") as f:
+    f.write('\n')
+    f.write('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f} \n'.format(lambda_x, lambda_z, alpha_y),)
+    f.write('Parameter values give b_2={:.2f} \n'.format(1-lambda_x/lambda_z))
+    f.write('Parameter values give d_2={:.2f} \n'.format(1/alpha_y))
+    f.write('So b_2+d_2={:.2f} \n'.format(1-lambda_x/lambda_z+1/alpha_y))
+    f.write('\n')
 
 
 ########## CORE CODE ##########
@@ -84,9 +83,8 @@ big_results = {}
 
 for sample_size in sample_size_set:
     print('Running {} simulations with sample size {}...'.format(B, sample_size))
-    f = open(outfile+'.txt', "a")
-    f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
-    f.close()
+    with open(outfile+'.txt', "a") as f:
+        f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
 
     random.seed(999)
 

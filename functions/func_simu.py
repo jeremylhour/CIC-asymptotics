@@ -140,16 +140,15 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
         print('\n')
         
     ##### WRITING TO FILE #####
-    f = open(file+'.txt', "a")
-    f.write('\n')
-    f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
-    for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
-        f.write(metric+': \n')
-        for model in y_centered.columns:
-            f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))
+    with open(file+'.txt', "a") as f:
         f.write('\n')
-    f.close()
-    
+        f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
+        for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
+            f.write(metric+': \n')
+            for model in y_centered.columns:
+                f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))
+            f.write('\n')
+
     ##### SAVING HISTOGRAM #####
     if histograms:
         num_bins = 50
@@ -178,47 +177,47 @@ def latex_table(results, file, models=['standard','smoothed', 'smoothed_lewbel-s
 
     k=0
 
-    f = open(file+'.tex', "a")
-    f.write('\n')
-    f.write(r'\begin{table}')
-    f.write('\n')
-
-    for model in models:
-        k += 1
-        string = model
-        item = 'model'
-        sample_line = ' '
-        header = r'\begin{tabular}{l|'
-        for sample_size in results:
-            sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+str(sample_size)+'}'
-            header = header + ('c'*len(metrics_set))
-            for metric in metrics_set:
-                string = string+' & '+str(round(results[sample_size][metric][model], digits))
-                item = item+' & '+metric
-        string = string +'\\\\'
-        item = item +'\\\\'
-        sample_line = sample_line +'\\\\'
-        header = header + '}'
-        ### WRITING
-        if k == 1:
-            f.write(header)
-            f.write('\n')
-            f.write(r'\toprule')
-            f.write('\n')
-            f.write(sample_line)
-            f.write('\n')
-            f.write(item)
-            f.write('\n')
-            f.write(r'\hline')
-            f.write('\n')
-        f.write(string)
+    with open(file+'.tex', "a") as f:
         f.write('\n')
-    
-    f.write(r'\bottomrule')
-    f.write('\n')
-    f.write(r'\end{tabular}')
-    f.write('\n')
-    f.write(r'\end{table}')
-    f.write('\n')
-    f.close()
+        f.write(r'\begin{table}')
+        f.write('\n')
+
+        for model in models:
+            k += 1
+            string = model
+            item = 'model'
+            sample_line = ' '
+            header = r'\begin{tabular}{l|'
+            for sample_size in results:
+                sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+str(sample_size)+'}'
+                header = header + ('c'*len(metrics_set))
+                for metric in metrics_set:
+                    string = string+' & '+str(round(results[sample_size][metric][model], digits))
+                    item = item+' & '+metric
+            string = string +'\\\\'
+            item = item +'\\\\'
+            sample_line = sample_line +'\\\\'
+            header = header + '}'
+            ### WRITING
+            if k == 1:
+                f.write(header)
+                f.write('\n')
+                f.write(r'\toprule')
+                f.write('\n')
+                f.write(sample_line)
+                f.write('\n')
+                f.write(item)
+                f.write('\n')
+                f.write(r'\hline')
+                f.write('\n')
+            f.write(string)
+            f.write('\n')
+        
+        f.write(r'\bottomrule')
+        f.write('\n')
+        f.write(r'\end{tabular}')
+        f.write('\n')
+        f.write(r'\end{table}')
+        f.write('\n')
+
     return
