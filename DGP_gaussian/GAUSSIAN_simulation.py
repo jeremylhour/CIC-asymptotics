@@ -55,12 +55,14 @@ variance_x = config["variance_x"]
 mu_x = config["mu_x"]
 
 
-print("mu_x={:.2f}".format(mu_x))
-print("variance_x={:.2f}".format(variance_x))
-print("Parameter values give b_1={:.2f}".format(1 - variance_x))
-print("Parameter values give b_2={:.2f}".format(1 - variance_x))
-print("--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply")
-print("--- and below 1 for theta_0 to be finite.")
+print(f"mu_x={mu_x}",
+      f"variance_x={variance_x}",
+      f"Parameter values give b_1={1 - variance_x}",
+      f"Parameter values give b_2={1 - variance_x}",
+      "--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply",
+      "--- and below 1 for theta_0 to be finite.",
+      sep = '\n'
+      )
 
 
 ##### SAVING TO FILE ###########

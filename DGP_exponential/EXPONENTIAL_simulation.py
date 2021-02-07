@@ -56,12 +56,14 @@ lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
     
-print('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f}'.format(lambda_x, lambda_z, alpha_y))
-print('Parameter values give b_2={:.2f}'.format(1-lambda_x/lambda_z))
-print('Parameter values give d_2={:.2f}'.format(1/alpha_y))
-print('So b_2+d_2={:.2f}'.format(1-lambda_x/lambda_z+1/alpha_y))
-print('--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply')
-print('--- and below 1 for theta_0 to be finite.')
+print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
+      f'Parameter values give b_2={round(1-lambda_x/lambda_z, 2)}',
+      f'Parameter values give d_2={round(1/alpha_y, 2)}',
+      f'So b_2+d_2={round(1-lambda_x/lambda_z+1/alpha_y, 2)}',
+      '--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply',
+      '--- and below 1 for theta_0 to be finite.',
+      sep = '\n'
+      )
 
 
 ##### SAVING TO FILE ###########
