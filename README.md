@@ -35,6 +35,6 @@ sudo apt-get install parallel
 - [test_scripts](test_scripts/): contains scripts that were used to develop the functions.
 
 ## Other folders:
-- input_configs: will be created when running create_yml_files.py](create_yml_files.py) and will contain the necessary YAML files,
+- input_configs: will be created when running a create_yml_files.py file (for example [DGP_gaussian/GAUSSIAN_create_yml_files.py](DGP_gaussian/GAUSSIAN_create_yml_files.py)) and will contain the necessary YAML files,
 - output: will also be created when running [simulation.py](simulation.py). It will contain simulations results (log files, histograms, latex table) as well as saved raw results as pickle format (inside the "raw" folder).
 Both folders should not be pushed to git repo.
