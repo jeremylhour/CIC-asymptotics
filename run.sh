@@ -14,7 +14,6 @@ python3 DGP_exponential/EXPONENTIAL_create_yml_files.py # to create yml files
 parallel -a files_list.txt python3 DGP_exponential/EXPONENTIAL_simulation.py
 python3 DGP_exponential/EXPONENTIAL_generate_latex.py
 
-
 # parallel run -- Gaussian
 cd CIC-asymptotics/
 python3 DGP_gaussian/GAUSSIAN_create_yml_files.py # to create yml files

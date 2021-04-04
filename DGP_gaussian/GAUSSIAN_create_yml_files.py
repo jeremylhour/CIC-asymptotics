@@ -9,7 +9,7 @@ Created on Tue Nov 17 17:13:30 2020
 @author: jeremylhour
 """
 
-import sys, os
+import os
 import yaml
 
 if not os.path.exists('input_configs_GAUSSIAN'):
