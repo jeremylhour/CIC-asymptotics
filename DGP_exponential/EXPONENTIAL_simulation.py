@@ -24,24 +24,17 @@ import yaml
 import math
 import pickle
 
-from statsmodels.distributions.empirical_distribution import ECDF
-
 from func_main import estimator_unknown_ranks
-from func_ecdf import smoothed_ecdf
 from func_simu import analytical_theta, generate_data, performance_report 
-from func_kde import kernel_density_estimator, gaussian_kernel, epanechnikov_kernel
 
 from scipy.stats import expon, pareto
    
 
 ########## SETTING UP FOLDER IF NEEDED ##########
-if not os.path.exists('output'):
-    os.makedirs('output')
-
-if not os.path.exists('output/raw'):
-    os.makedirs('output/raw')
+for path in ['ouput', 'output/raw']:
+    if not os.path.exists(path):
+        os.makedirs(path)
     
-
 ########## LOAD YAML CONFIG ##########
 #config_file = os.path.join(os.getcwd(),'DGP_exponential/EXPONENTIAL_example.yml')
 config_file= os.path.join(os.getcwd(),sys.argv[1])

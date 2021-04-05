@@ -7,8 +7,7 @@ Created on Thu Nov 19 09:56:39 2020
 
 @author: jeremylhour
 """
-import os, sys
-import numpy as np
+import os
 import yaml
 import pickle
 
@@ -20,13 +19,13 @@ with open(config_file, 'r') as stream:
     config = yaml.safe_load(stream)
     
 B = config['nb_simu']
-
 lambda_x = config['lambda_x']
 lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
 
 ########## CREATING TABLE ##########
+print('Creating LaTeX table ...')
 
 ########## PARAMETERS ##########
 models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier']

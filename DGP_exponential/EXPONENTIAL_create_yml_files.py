@@ -8,9 +8,9 @@ Created on Tue Nov 17 17:13:30 2020
 
 @author: jeremylhour
 """
-
-import sys, os
+import os
 import yaml
+
 
 if not os.path.exists('input_configs_EXPONENTIAL'):
     os.makedirs('input_configs_EXPONENTIAL')
@@ -29,7 +29,7 @@ lambda_x = config['lambda_x']
 lambda_z = config['lambda_z']
 alpha_y = config['alpha_y']
 
-print('Creating requested YAML files...')
+print('Creating requested YAML files ...')
 
 for i in lambda_x:
     for j in lambda_z:
