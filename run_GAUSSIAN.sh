@@ -1,12 +1,12 @@
 cd Documents/code/CIC-asymptotics/
 
-rm -rf /input_configs_GAUSSIAN
+rm -r input_configs_GAUSSIAN
 rm -f files_list_GAUSSIAN.txt
-rm -rf /output
+rm -r output
 
-echo 'Running simulations for Gaussian DGP \n'
+echo 'Running simulations for Gaussian DGP'
 
-echo 'Creating YAML config files \n'
+echo 'Creating YAML config files'
 python3 DGP_gaussian/GAUSSIAN_create_yml_files.py # to create yml files
 
 echo 'Running simulations ...' 

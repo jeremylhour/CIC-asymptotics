@@ -184,7 +184,7 @@ for sample_size in sample_size_set:
     )
 
     report = performance_report(
-        y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile
+        y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile
     )
     big_results[sample_size] = report
 
