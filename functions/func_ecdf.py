@@ -8,7 +8,6 @@ Created on Mon Nov  9 13:43:00 2020
 
 @author: jeremylhour
 """
-
 import numpy as np
 
 
@@ -17,7 +16,7 @@ def ranks_and_antiranks(points):
     ranks_and_antiranks:
         returns ranks and antiranks for array of points
         
-    :param points: np.array, vector of points of dimension 1
+    :param points (np.array): vector of points of dimension 1
     """
     ranks = np.array([sorted(points).index(i) for i in points])
     return ranks, np.argsort(ranks)
@@ -30,8 +29,8 @@ def smoothed_ecdf(new_points, data):
         as in Shorack and Wellner (p. 86), but extended to non-bounded support.
         Linear extension outside the support using the nearest linear parts.
     
-    :param new_points: new points for which the value is returned
-    :param x: points used to compute the smoothed empirical CDF
+    :param new_points (np.array): new points for which the value is returned
+    :param data (np.array): points used to compute the smoothed empirical CDF
     """
     n_points = len(data)
     sorted_x = np.array(sorted(data))

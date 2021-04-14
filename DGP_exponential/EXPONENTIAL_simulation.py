@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Main file to run simulations.
+Main file to run simulations with exponential DGP.
 
-Currently:
-    - Y ~ Pareto,
-    - Z ~ Exponential,
-    - X ~ Exponential.
+More precisely :
+    - Y ~ Pareto(alpha_y),
+    - Z ~ Exponential(lambda_z),
+    - X ~ Exponential(lambda_x).
     
 Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
 """
-
 import sys, os
 sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
@@ -35,7 +34,10 @@ for path in ['ouput', 'output/raw']:
     if not os.path.exists(path):
         os.makedirs(path)
     
-########## LOAD YAML CONFIG ##########
+print('='*80)
+print('LOADING THE CONFIG')
+print('='*80)
+
 #config_file = os.path.join(os.getcwd(),'DGP_exponential/EXPONENTIAL_example.yml')
 config_file= os.path.join(os.getcwd(),sys.argv[1])
 
@@ -59,7 +61,7 @@ print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
       )
 
 
-##### SAVING TO FILE ###########
+########## SAVING TO FILE ###########
 outfile = 'output/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
     
 with open(outfile+'.txt', "a") as f:
@@ -71,7 +73,10 @@ with open(outfile+'.txt', "a") as f:
     f.write('\n')
 
 
-########## CORE CODE ##########
+print('='*80)
+print('RUNNING SIMULATIONS')
+print('='*80)
+
 nb_estimators = 5
 sample_size_set = config['sample_size']
 big_results = {}
@@ -82,12 +87,9 @@ for sample_size in sample_size_set:
         f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
 
     random.seed(999)
-
-    results = np.zeros(shape=(B, nb_estimators))
-    sigma = np.zeros(shape=(B, nb_estimators))
+    results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
 
     start_time = time.time()
-
     for b in range(B):
         sys.stdout.write("\r{0}".format(b))
         sys.stdout.flush()
@@ -113,7 +115,6 @@ for sample_size in sample_size_set:
             print(' -- error for this iteration')
             results[b,] = [np.nan]*nb_estimators
             sigma[b,] = [np.nan]*nb_estimators
-
     print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
 
     ########## POST-PROCESSS ##########
@@ -137,10 +138,12 @@ for sample_size in sample_size_set:
                              'smooth_ls': sigma[3],
                              'smooth_xavier': sigma[4]})
     
-    report = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
-    big_results[sample_size] = report
+    big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, sigma=sigma_df, file=outfile)
     
-    
-########## SAVING RESULTS OBJECT ##########
+
+print('='*80)
+print('SAVING RESULT OBJECT')
+print('='*80)
+
 pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
 pickle.dump(big_results, open(pickle_file+'.p','wb'))

@@ -3,7 +3,7 @@
 """
 Main file to run simulations with Gaussian DGP.
 
-Currently:
+This DGP :
     - Y ~ N(0,1),
     - Z ~ N(0,1),
     - X ~ N(mu,v).
@@ -12,7 +12,6 @@ Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
 """
-
 import sys, os
 
 sys.path.append(os.path.join(os.getcwd(), "functions/"))
@@ -43,7 +42,10 @@ if not os.path.exists("output/raw"):
     os.makedirs("output/raw")
 
 
-########## LOAD YAML CONFIG ##########
+print('='*80)
+print('LOADING CONFIG')
+print('='*80)
+
 # config_file = os.path.join(os.getcwd(),'example_config_gaussian.yml')
 config_file = os.path.join(os.getcwd(), sys.argv[1])
 
@@ -65,7 +67,7 @@ print(f"mu_x={mu_x}",
       )
 
 
-##### SAVING TO FILE ###########
+########## SAVING TO FILE ###########
 outfile = (
     "output/gaussian_simulations_B="
     + str(B)
@@ -84,7 +86,10 @@ with open(outfile + ".txt", "a") as f:
     f.write("\n")
 
 
-########## CORE CODE ##########
+print('='*80)
+print('RUNNING SIMULATIONS')
+print('='*80)
+
 nb_estimators = 5
 sample_size_set = config["sample_size"]
 big_results = {}
@@ -96,11 +101,9 @@ for sample_size in sample_size_set:
 
     random.seed(999)
 
-    results = np.zeros(shape=(B, nb_estimators))
-    sigma = np.zeros(shape=(B, nb_estimators))
+    results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
 
     start_time = time.time()
-
     for b in range(B):
         sys.stdout.write("\r{0}".format(b))
         sys.stdout.flush()
@@ -144,7 +147,6 @@ for sample_size in sample_size_set:
             print(" -- error for this iteration")
             results[b,] = [np.nan] * nb_estimators
             sigma[b,] = [np.nan] * nb_estimators
-
     print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
 
     ########## POST-PROCESSS ##########
@@ -183,13 +185,13 @@ for sample_size in sample_size_set:
         }
     )
 
-    report = performance_report(
-        y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile
-    )
-    big_results[sample_size] = report
+    big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile)
 
 
-########## SAVING RESULTS OBJECT ##########
+print('='*80)
+print('SAVING RESULT OBJECT')
+print('='*80)
+
 pickle_file = (
     "output/raw/gaussian_simulations_B="
     + str(B)

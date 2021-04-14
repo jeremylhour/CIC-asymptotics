@@ -18,6 +18,10 @@ import numpy as np
 from statsmodels.distributions.empirical_distribution import ECDF
 
 
+# --------------
+# Unknown ranks
+# --------------
+
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
     """
     counterfactual ranks:
@@ -53,7 +57,6 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     if method == "standard":
         ecdf = ECDF(z)
         u_hat = ecdf(x)
-     
         
     """
     Estimator of theta
@@ -61,13 +64,11 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     counterfactual_y = np.quantile(y, u_hat)
     theta_hat = counterfactual_y.mean() 
     
-    
     """
     Computes inv_density depending on the method of choice.
     """
     if se_method == "kernel":
         inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
-        u_hat_count = np.ones(len(u_hat))
         
     elif se_method == "lewbel-schennach":
         u_hat = np.unique(sorted(u_hat)) # order and remove duplicates
@@ -92,7 +93,6 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         ub, lb = np.array(ub), np.array(lb)
         inv_density = (np.quantile(y, ub) - np.quantile(y, lb)) / (ub - lb)
         
-
     """
     compute_zeta:
         compute vector zeta_i as in out paper,
@@ -101,12 +101,10 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     support = np.linspace(1/len(y), 1, len(y), endpoint=True) # = F_y(Y)
     zeta = []
     for point in support:
-        indicator = np.zeros(len(u_hat))
-        indicator[np.where(point <= u_hat)] = 1
+        indicator = (point <= u_hat)
         inside_integral = -(indicator - u_hat)*inv_density
         zeta.append(inside_integral.mean())
     zeta = np.array(zeta)
-    
     
     """
     compute_phi:
@@ -116,19 +114,16 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     support = np.linspace(1/len(z), 1, len(z), endpoint=True) # = F_z(Z)
     phi = []
     for point in support:
-        indicator = np.zeros(len(u_hat))
-        indicator[np.where(point <= u_hat)] = 1
+        indicator = (point <= u_hat)
         inside_integral = (indicator-u_hat)*inv_density
         phi.append(inside_integral.mean())
     phi = np.array(phi)
-        
     
     """
     compute_epsilon:
         Formula of Athey and Imbens (2006)
     """
     epsilon = theta_hat - counterfactual_y
-    
     
     """
     compute standard error
@@ -137,6 +132,10 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
 
     return theta_hat, se/np.sqrt(len(y))
             
+
+# --------------
+# Known ranks
+# --------------
 
 def estimator_known_ranks(y, u):
     """
@@ -148,7 +147,6 @@ def estimator_known_ranks(y, u):
     
     VERIFIER QUE C'EST BON!!!
     """
-    
     denominateur = kernel_density_estimator(x=np.quantile(y, u), data=y) 
     counterfactual_y = np.quantile(y, u)
     theta_hat = counterfactual_y.mean()    
@@ -162,8 +160,7 @@ def estimator_known_ranks(y, u):
     support = np.linspace(1/len(y), 1, len(y), endpoint=True) # = F_y(Y)
     zeta = []
     for point in support:
-        indicator = np.zeros(len(u))
-        indicator[np.where(point <= u)] = 1
+        indicator = (point <= u)
         inside_integral = -(indicator - u)/denominateur
         zeta.append(inside_integral.mean())
     zeta = np.array(zeta)
@@ -182,3 +179,7 @@ def estimator_known_ranks(y, u):
     se = np.sqrt((zeta**2).mean() + (epsilon**2).mean())
     
     return theta_hat, se/np.sqrt(len(y))
+
+
+if __name__ == '__main__':
+    pass
