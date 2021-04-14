@@ -1,6 +1,6 @@
-cd Documents/code/CIC-asymptotics/
+cd CIC-asymptotics/
 
-rm -r input_configs_GAUSSIAN
+rm -r input_configs_GAUSSIAN/
 rm -f files_list_GAUSSIAN.txt
 rm -r output
 
