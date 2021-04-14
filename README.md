@@ -1,6 +1,8 @@
 # CIC-asymptotics
 Codes for the 'Change-in-Change Asymptotics' project with Xavier D'Haultfoeuille and Martin Mugnier.
 
+@author : jeremy.l.hour@ensae.fr
+
 ## Main file
 [DGP_exponential/EXPONENTIAL_simulation.py](DGP_exponential/EXPONENTIAL_simulation.py) is the main file for running the simulations for the exponential DGP. It loads the configuration from the YAML file given as argument in the shell (could be [DGP_exponential/EXPONENTIAL_example.yml](DGP_exponential/EXPONENTIAL_example.yml) for example). It works in the same manner for other DGPs.
 
