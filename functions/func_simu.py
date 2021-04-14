@@ -227,3 +227,7 @@ def latex_table(results, file, models=['standard','smoothed', 'smoothed_lewbel-s
         f.write(r'\end{table}')
         f.write('\n')
     return None
+
+
+if __name__ == '__main__':
+    pass
