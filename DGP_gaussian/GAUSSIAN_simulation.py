@@ -33,8 +33,7 @@ if __name__ == '__main__':
     print('='*80)
     print('LOADING CONFIG')
     print('='*80)
-    
-    # config_file = os.path.join(os.getcwd(),'example_config_gaussian.yml')
+
     config_file = os.path.join(os.getcwd(), sys.argv[1])
     
     with open(config_file, "r") as stream:

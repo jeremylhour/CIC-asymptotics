@@ -34,8 +34,7 @@ if __name__ == '__main__':
     print('LOADING THE CONFIG')
     print('='*80)
     
-    #config_file = os.path.join(os.getcwd(),'DGP_exponential/EXPONENTIAL_example.yml')
-    config_file= os.path.join(os.getcwd(),sys.argv[1])
+    config_file = os.path.join(os.getcwd(),sys.argv[1])
     
     with open(config_file, 'r') as stream:
         config = yaml.safe_load(stream)

@@ -1,8 +1,12 @@
 # --------------------------------
+# CIC ASYMPTOTICS
+#
 # MAIN SCRIPT TO RUN SIMULATIONS
-# --------------------------------
+#
+# @author: jeremy.l.hour@ensae.fr
+# -------------------------------
 
-EXPERIMENT=EXPONENTIAL # [EXPONENTIAL, GAUSSIAN]
+EXPERIMENT=GAUSSIAN # [EXPONENTIAL, GAUSSIAN]
 
 
 ########## DO NO MODIFY BELOW ##########
@@ -26,4 +30,4 @@ echo CREATING RESULT TABLE
 python3 DGP_${experiment}/${EXPERIMENT}_generate_latex.py
 
 echo ZIPPING OUTPUT
-zip -r output_${EXPERIMENT}.zip output/ 
+zip -r output_${EXPERIMENT}_$(date +'%d-%m-%Y').zip output/ 
