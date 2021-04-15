@@ -54,9 +54,9 @@ sudo apt-get install zip
 - output: will also be created when running [simulation.py](simulation.py). It will contain simulations results (log files, histograms, latex table) as well as saved raw results as pickle format (inside the "raw" folder).
 Both folders should not be pushed to git repo.
 
-## Licence
+## License
 
-The files and documents available in this repository are under the Etalab Open Licence version 2.0 (see the
+The files and documents available in this repository are under the Etalab Open License version 2.0 (see the
 [license](./LICENSE)).
 
 The use of these files is free of charge and without restriction, at the sole condition of citing it as :
