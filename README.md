@@ -4,6 +4,7 @@ Codes for the 'Change-in-Change Asymptotics' project with Xavier D'Haultfoeuille
 @author : jeremy.l.hour@ensae.fr
 
 ## Main file
+
 [DGP_exponential/EXPONENTIAL_simulation.py](DGP_exponential/EXPONENTIAL_simulation.py) is the main file for running the simulations for the exponential DGP. It loads the configuration from the YAML file given as argument in the shell (could be [DGP_exponential/EXPONENTIAL_example.yml](DGP_exponential/EXPONENTIAL_example.yml) for example). It works in the same manner for other DGPs.
 
 Here is how to run it. From within the main folder, enter :
@@ -18,6 +19,7 @@ python3 func_simu.py
 ```
 
 ## Parallel computing
+
 Simulations can be ran in parallel from the terminal using GNU parallel tool. First, YAML files need to be created using e.g. the script [DGP_gaussian/GAUSSIAN_create_yml_files.py](DGP_gaussian/GAUSSIAN_create_yml_files.py). Then, simulations can be ran in parallel inputing the YAML file names from the automatically created list.
 ```
 python3 DGP_gaussian/GAUSSIAN_create_yml_files.py # to create yml files
@@ -42,10 +44,22 @@ sudo apt-get install zip
 ```
 
 ## Important folders
-- [functions](functions/): contains all the necessary functions splitted by theme,
+
+- [functions](functions/): contains all the necessary functions broken down by theme,
 - [test_scripts](test_scripts/): contains scripts that were used to develop the functions.
 
 ## Other folders
+
 - input_configs: will be created when running a create_yml_files.py file (for example [DGP_gaussian/GAUSSIAN_create_yml_files.py](DGP_gaussian/GAUSSIAN_create_yml_files.py)) and will contain the necessary YAML files,
 - output: will also be created when running [simulation.py](simulation.py). It will contain simulations results (log files, histograms, latex table) as well as saved raw results as pickle format (inside the "raw" folder).
 Both folders should not be pushed to git repo.
+
+## Licence
+
+The files and documents available in this repository are under the Etalab Open Licence version 2.0 (see the
+[license](./LICENSE)).
+
+The use of these files is free of charge and without restriction, at the sole condition of citing it as :
+```
+D'Haultfoeuille, X., L'Hour, J. and Mugnier, M.  - https://github.com/jlhourENSAE/CIC-asymptotics, 2021
+```
