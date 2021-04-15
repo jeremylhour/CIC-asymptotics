@@ -11,6 +11,10 @@ Created on Mon Nov  9 13:43:00 2020
 import numpy as np
 
 
+# -------------
+# EMPIRICAL CDF
+# -------------
+
 def ranks_and_antiranks(points):
     """
     ranks_and_antiranks:

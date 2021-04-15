@@ -11,15 +11,15 @@ Created on Wed Nov 11 12:02:50 2020
 import sys, os
 sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
-from func_kde import *
-from func_ecdf import *
+from func_kde import kernel_density_estimator
+from func_ecdf import smoothed_ecdf
 
 import numpy as np
 from statsmodels.distributions.empirical_distribution import ECDF
 
 
 # --------------
-# Unknown ranks
+# UNKNOWN RANKS
 # --------------
 
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
@@ -134,7 +134,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
             
 
 # --------------
-# Known ranks
+# KNOWN RANKS
 # --------------
 
 def estimator_known_ranks(y, u):

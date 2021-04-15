@@ -13,7 +13,7 @@ import numpy as np
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 
-# If running as main :
+# When running as main :
 import sys, os
 sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
@@ -27,6 +27,7 @@ import pickle
 from scipy.stats import expon, pareto
 
 from func_main import estimator_unknown_ranks
+
 
 # ---------------------
 # UNOBSERVED RANKS
