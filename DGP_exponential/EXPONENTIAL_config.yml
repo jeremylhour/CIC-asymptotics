@@ -1,4 +1,4 @@
-nb_simu: 5000                       # Nb. of simulations
+nb_simu: 10000                       # Nb. of simulations
 sample_size: [100, 500, 1000]       # Sample size, can be an array of multiple values
 lambda_x: [.2, .3, .5, .8, .9]      # Parameter of exponential distribution for X
 lambda_z: [1]                       # Parameter of exponential distribution for Z

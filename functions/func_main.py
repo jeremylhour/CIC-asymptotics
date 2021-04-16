@@ -58,7 +58,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         ecdf = ECDF(z)
         u_hat = ecdf(x)
     else:
-        raise TypeError("method should be either smoothed or standard.")
+        raise TypeError("method arg should be either smoothed or standard.")
         
     """
     Estimator of theta
@@ -95,7 +95,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
         ub, lb = np.array(ub), np.array(lb)
         inv_density = (np.quantile(y, ub) - np.quantile(y, lb)) / (ub - lb)
     else:
-        raise TypeError("se_method should be either kernel, lewbel-schennach or xavier.")
+        raise TypeError("se_method arg should be kernel, lewbel-schennach or xavier.")
         
     """
     compute_zeta:
