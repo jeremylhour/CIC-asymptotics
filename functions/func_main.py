@@ -54,9 +54,11 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=x, data=z)
-    if method == "standard":
+    elif method == "standard":
         ecdf = ECDF(z)
         u_hat = ecdf(x)
+    else:
+        raise TypeError("method should be either smoothed or standard.")
         
     """
     Estimator of theta
@@ -92,6 +94,8 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
                 lb.append(max(i for i in u_hat if i < u))
         ub, lb = np.array(ub), np.array(lb)
         inv_density = (np.quantile(y, ub) - np.quantile(y, lb)) / (ub - lb)
+    else:
+        raise TypeError("se_method should be either kernel, lewbel-schennach or xavier.")
         
     """
     compute_zeta:
