@@ -69,8 +69,5 @@ if __name__ == '__main__':
     plt.legend()
     plt.xlabel(r'$b_2+d_2$')
     plt.ylabel('Coverage rate')
-    
-    # show graph
-    plt.show()
-    
+        
     plt.savefig('line_chart.png', dpi=600)
