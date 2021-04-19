@@ -24,7 +24,7 @@ python3 DGP_${experiment}/${EXPERIMENT}_create_yml_files.py
 echo RUNNING SIMULATIONS
 mkdir output/
 mkdir output/raw/
-parallel -a files_list_${EXPERIMENT}.txt python3 DGP_$experiment/${EXPERIMENT}_simulation.py
+parallel --j 5 -a files_list_${EXPERIMENT}.txt python3 DGP_$experiment/${EXPERIMENT}_simulation.py
 
 echo CREATING RESULT TABLE
 python3 DGP_${experiment}/${EXPERIMENT}_generate_latex.py

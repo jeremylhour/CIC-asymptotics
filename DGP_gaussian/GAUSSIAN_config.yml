@@ -1,4 +1,4 @@
 nb_simu: 10000                        # Nb. of simulations
 sample_size: [100, 500, 1000]         # Sample size, can be an array of multiple values
 mu_x: [0, .5, 1, 2, 3]                # mean of X (Gaussian distribution)
-variance_x: [.5, 1, 2, 3]             # Variance of X (Gaussian distribution)
+variance_x: [.05, .1, .25, .4, .5, .6, .75, .9, .95]             # Variance of X (Gaussian distribution)

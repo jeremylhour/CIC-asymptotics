@@ -22,10 +22,10 @@ if __name__ == '__main__':
         
     B = config['nb_simu']
     lambda_x = sorted(config['lambda_x'], reverse=True)
-    b2 = [round(1 - i, 3) for i in lambda_x]
+    b2 = [round(1 - i, 2) for i in lambda_x]
     
-    alpha_y = config['alpha_y']
-    d2 = [round(1/i, 3) for i in alpha_y]
+    alpha_y = sorted(config['alpha_y'], reverse=False)
+    d2 = [round(1/i, 2) for i in alpha_y]
     # NB : in this application, lambda_Z = 1
     
     ########## PARAMETERS ##########
