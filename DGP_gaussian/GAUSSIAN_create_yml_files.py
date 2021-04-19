@@ -15,7 +15,7 @@ if __name__ == '__main__':
     if not os.path.exists('input_configs_GAUSSIAN'):
         os.makedirs('input_configs_GAUSSIAN')
     
-    liste = 'files_list_GAUSSIAN.txt'
+    job_file = 'job_list.txt'
     
     ########## INPUT PARAMETERS ##########
     config_file = os.path.join(os.getcwd(),'DGP_gaussian/GAUSSIAN_config.yml')
@@ -33,13 +33,11 @@ if __name__ == '__main__':
     for i in mu_x:
         for j in variance_x:
             file_name = 'input_configs_GAUSSIAN/mu_x='+str(i)+'_variance_x='+str(j)+'.yml'
-            f = open(file_name, "w")
-            f.write('nb_simu: {}       # Nb. of simulations, should be a scalar and the same for all files.\n'.format(nb_simu))
-            f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
-            f.write('mu_x: {}        # Mean of X\n'.format(i))
-            f.write('variance_x: {}         # Variance of X\n'.format(j))
-            f.close()
+            with open(file_name, "w") as f:
+                f.write('nb_simu: {}       # Nb. of simulations, should be a scalar and the same for all files.\n'.format(nb_simu))
+                f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
+                f.write('mu_x: {}        # Mean of X\n'.format(i))
+                f.write('variance_x: {}         # Variance of X\n'.format(j))
         
-            g = open(liste,'a')
-            g.write(file_name+'\n')
-            g.close()
+            with open(job_file, 'a') as g:
+                g.write(file_name+'\n')
