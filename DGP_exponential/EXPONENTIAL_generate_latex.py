@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Generate latex from the raw results output.
+Generate latex from pickle files located in output/raw/
 
 Created on Thu Nov 19 09:56:39 2020
 
@@ -25,7 +25,6 @@ if __name__ == '__main__':
     
     colours = False
     
-    
     ########## CREATING TABLE ##########
     print('Creating LaTeX table ...')
     
@@ -43,7 +42,7 @@ if __name__ == '__main__':
     ########## CORE CODE ##########
     counter = 0
     
-    f = open('output/simulation_table.tex', "w")
+    f = open('output/EXPONENTIAL_simulation.tex', "w")
     
     for i in lambda_x:
         for j in lambda_z:

@@ -48,6 +48,7 @@ if __name__ == '__main__':
     
     ########## AVERAGE OVER VALUES OF b_2+d_2 ##########
     df = pd.DataFrame(coverageRates)
+    df['bd_sum'] = round(df['bd_sum'], 2) # pour gérer les approximations
     dataForPlot = df.groupby('bd_sum').mean()
     
     ########## DRAW THE CHART ##########
