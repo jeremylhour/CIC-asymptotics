@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script to line charts for the coverage rates,
-GAUSSIAN DGP
+Script to line charts for the coverage rates
 
 Created on Fri Apr 16 20:54:23 2021
 
@@ -15,16 +14,17 @@ import pandas as pd
 
 if __name__ == '__main__':
     ########## LOAD MAIN CONFIG ##########
-    config_file = '../DGP_gaussian/GAUSSIAN_config.yml'
+    config_file = '../DGP_exponential/EXPONENTIAL_config.yml'
     
     with open(config_file, 'r') as stream:
         config = yaml.safe_load(stream)
         
     B = config['nb_simu']
-    variance_x = sorted(config['variance_x'], reverse=True)
-    b2 = [round(1 - i, 2) for i in variance_x]
+    lambda_x = sorted(config['lambda_x'], reverse=True)
+    b2 = [round(1 - i, 2) for i in lambda_x]
     
-    mu_x = 3
+    alpha_y = sorted(config['alpha_y'], reverse=False)
+    d2 = [round(1/i, 2) for i in alpha_y]
     # NB : in this application, lambda_Z = 1
     
     ########## PARAMETERS ##########
@@ -33,17 +33,18 @@ if __name__ == '__main__':
     
     ########## EXTRACT COVERAGE RATES ##########
     coverageRates = []
-
-    for index_x in variance_x:
-        pickle_file = '../output/raw/gaussian_simulations_B='+str(B)+'_mu_x='+str(mu_x)+'_variance_x='+str(index_x)+'.p'
-        try:
-            result = pickle.load(open(pickle_file,'rb'))
-            dico = {'bd_sum': 1-index_x}
-            for model in models:
-                dico[model] = result[sample_size]['Coverage rate'][model]
-            coverageRates.append(dico)
-        except:
-            pass
+    for index_y in alpha_y:
+        currentRow = []
+        for index_x in lambda_x:
+            pickle_file = '../output/raw/simulations_B='+str(B)+'_lambda_x='+str(index_x)+'_lambda_z=1_alpha_y='+str(index_y)+'.p'
+            try:
+                result = pickle.load(open(pickle_file,'rb'))
+                dico = {'bd_sum': 1-index_x + 1/index_y}
+                for model in models:
+                    dico[model] = result[sample_size]['Coverage rate'][model]
+                coverageRates.append(dico)
+            except:
+                pass
     
     ########## AVERAGE OVER VALUES OF b_2+d_2 ##########
     df = pd.DataFrame(coverageRates)
@@ -51,16 +52,16 @@ if __name__ == '__main__':
     dataForPlot = df.groupby('bd_sum').mean()
     
     ########## DRAW THE CHART ##########
-    lt_dico = {
-        'standard_kernel': 'solid',
-        'standard_xavier': 'dashed',
-        'smooth_kernel': 'dotted',
-        'smooth_ls': 'dashdot',
-        'smooth_xavier': (0, (3, 5, 1, 5, 1, 5))
+    col_dico = {
+        'standard_kernel': 'blue',
+        'standard_xavier': 'green',
+        'smooth_kernel': 'red',
+        'smooth_ls': 'orange',
+        'smooth_xavier': 'yellow'
         }
     
     for model in models:
-        plt.plot(model, data=dataForPlot, marker='', linestyle=lt_dico[model], markersize=12, color='black', linewidth=2)
+        plt.plot(model, data=dataForPlot, marker='', linestyle='solid', markersize=12, color=col_dico[model], linewidth=2)
     
     plt.plot((0, 1), (.95, .95), color='grey', linestyle='dashed')
     plt.plot((.5, .5), (0, 1), color='grey', linestyle='dashed')

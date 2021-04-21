@@ -8,6 +8,11 @@ This DGP :
     - Z ~ N(0,1),
     - X ~ N(mu,v).
     
+Implied "deep" parameters, if variance_x > variance_x :
+    - b_1 = b_2 = 1-variance_z/variance_x,
+    - d_1 = d_2 = 0.
+When variance_x < variance_x, there is no problem.
+    
 Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
@@ -46,9 +51,9 @@ if __name__ == '__main__':
     
     print(f"mu_x={mu_x}",
           f"variance_x={variance_x}",
-          f"Parameter values give b_1={1 - variance_x}",
-          f"Parameter values give b_2={1 - variance_x}",
-          "--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply",
+          f"Parameter values give b_1 = b_2 = {1 - 1/variance_x}",
+          "In this DGP, d_1 = d_2 = 0",
+          "--- Remember, b_i + d_i, i=1, 2 should be below .5 for Theorem 2 to apply",
           "--- and below 1 for theta_0 to be finite.",
           sep = '\n'
           )
@@ -68,8 +73,8 @@ if __name__ == '__main__':
         f.write("\n")
         f.write("mu_x={:.2f} \n".format(mu_x))
         f.write("variance_x={:.2f} \n".format(variance_x))
-        f.write("Parameter values give b_1={:.2f} \n".format(1 - variance_x))
-        f.write("Parameter values give b_2={:.2f} \n".format(1 - variance_x))
+        f.write(f"Parameter values give b_1 = b_2 ={1 - 1/variance_x}")
+        f.write("In this DGP, d_1 = d_2 = 0")
         f.write("\n")
     
     

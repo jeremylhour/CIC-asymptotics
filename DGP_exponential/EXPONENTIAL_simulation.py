@@ -3,10 +3,15 @@
 """
 Main file to run simulations with exponential DGP.
 
-More precisely :
+Parameters :
     - Y ~ Pareto(alpha_y),
     - Z ~ Exponential(lambda_z),
     - X ~ Exponential(lambda_x).
+
+Implied "deep" parameters :
+    - b_2 = 1-lambda_x/lambda_z,
+    - d_2 = 1/alpha_y,
+    - b_1 = d_1 = 0.
     
 Created on Mon Nov  9 12:07:05 2020
 

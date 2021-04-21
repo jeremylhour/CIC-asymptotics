@@ -24,7 +24,7 @@ def density(x, delta = 0, sigma0=1, sigma1=1):
 
 
 n = 10000
-x_eval = np.linspace(.98, 1, n, endpoint=False)
+x_eval = np.linspace(-3, 3, n, endpoint=False)
 
 sigma0 = .2
 sigma1 = 1
