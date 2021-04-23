@@ -12,6 +12,8 @@ Implied "deep" parameters, if variance_x > variance_x :
     - b_1 = b_2 = 1-variance_z/variance_x,
     - d_1 = d_2 = 0.
 When variance_x < variance_x, there is no problem.
+
+In this DGP, theta_0 = mu, since F_Z = F_Y.
     
 Created on Mon Nov  9 12:07:05 2020
 
@@ -30,7 +32,7 @@ import math
 import pickle
 
 from func_main import estimator_unknown_ranks
-from func_simu import generate_data, performance_report, true_theta
+from func_simu import generate_data, performance_report
 
 from scipy.stats import norm
 
@@ -148,14 +150,7 @@ if __name__ == '__main__':
         sigma = pd.DataFrame(sigma)
         sigma.dropna(axis=0, inplace=True)
     
-        # theta0 = analytical_theta(alpha_y = alpha_y, lambda_z = lambda_z, lambda_x = lambda_x)
-    
-        theta0 = true_theta(
-            distrib_y=norm(loc=0, scale=1),
-            distrib_z=norm(loc=0, scale=1),
-            distrib_x=norm(loc=mu_x, scale=np.sqrt(variance_x)),
-            size=100000,
-        )
+        theta0 = mu_x
     
         y_hat = pd.DataFrame(
             {
