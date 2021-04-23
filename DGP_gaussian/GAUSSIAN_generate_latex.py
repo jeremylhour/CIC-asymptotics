@@ -55,8 +55,8 @@ if __name__ == '__main__':
     
     f = open("output/GAUSSIAN_simulation.tex", "w")
     
-    for i in variance_x:
-        for j in mu_x:
+    for j in mu_x:
+        for i in variance_x:
             pickle_file = (
                 "output/raw/gaussian_simulations_B="
                 + str(B)
@@ -64,9 +64,10 @@ if __name__ == '__main__':
                 + str(j)
                 + "_variance_x="
                 + str(i)
+                + ".p"
             )
             try:
-                result = pickle.load(open(pickle_file + ".p", "rb"))
+                result = pickle.load(open(pickle_file, "rb"))
             except:
                 continue
     
@@ -74,12 +75,12 @@ if __name__ == '__main__':
                 r" & \multicolumn{"
                 + str(len(metrics_set) * len(result))
                 + "}{c}{"
-                + "$\sigma_X^2$="
-                + str(i)
-                + ", $\mu_X$="
+                + "$\mu_X$="
                 + str(j)
+                + ", $\sigma_X^2$="
+                + str(i)
                 + " -- $b_1=b_2$="
-                + str(round(1 - i, 2))
+                + str(round(1 - 1/i, 2))
                 + "}"
             )
             param_line = param_line + "\\\\"
