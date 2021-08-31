@@ -18,7 +18,6 @@ Created on Mon Nov  9 12:07:05 2020
 @author: jeremylhour
 """
 import sys, os
-sys.path.append(os.path.join(os.getcwd(),'functions/'))
 
 import numpy as np
 import pandas as pd
@@ -28,8 +27,8 @@ import yaml
 import math
 import pickle
 
-from func_main import estimator_unknown_ranks
-from func_simu import analytical_theta, generate_data, performance_report 
+from src.mainFunctions import estimator_unknown_ranks
+from src.simulations import analytical_theta, generate_data, performance_report 
 
 from scipy.stats import expon, pareto
    

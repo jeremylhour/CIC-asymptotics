@@ -9,39 +9,32 @@ Created on Wed Nov 11 12:07:14 2020
 
 @author: jeremylhour
 """
+import sys
 import numpy as np
-from scipy.stats import norm
-import matplotlib.pyplot as plt
-
-# When running as main :
-import sys, os
-sys.path.append(os.path.join(os.getcwd(),'functions/'))
-
+from numba import njit
 import pandas as pd
-import random
 import time
 import yaml
-import math
 import pickle
+import matplotlib.pyplot as plt
 
+from scipy.stats import norm
 from scipy.stats import expon, pareto
 
-from func_main import estimator_unknown_ranks
+from mainFunctions import estimator_unknown_ranks
 
-
-# ---------------------
+# ------------------------------------------------------------------------------------
 # UNOBSERVED RANKS
-# ---------------------
-
+# ------------------------------------------------------------------------------------
 def true_theta(distrib_y, distrib_z, distrib_x, size=10000):
     """
     true_theta:
         compute the true value of theta,
         by simulation since analytical formula is not possible.
 
-    :param distrib_y: distribution of Y
-    :param distrib_z: distribution of Z
-    :param distrib_x: distribution of X
+    @param distrib_y: distribution of Y
+    @param distrib_z: distribution of Z
+    @param distrib_x: distribution of X
     """
     Q_y = distrib_y.ppf # Quantile function of Y
     F_z = distrib_z.cdf # CDF of Z
@@ -49,23 +42,22 @@ def true_theta(distrib_y, distrib_z, distrib_x, size=10000):
 
     U = np.random.uniform(size=size)
     U_tilde = Q_y(F_z(Q_x(U)))
-    theta = U_tilde.mean()
+    theta = np.mean(U_tilde)
     return theta
 
-
+@njit
 def analytical_theta(alpha_y, lambda_z, lambda_x):
     """
     analytical_theta:
         compute the true value of theta,
         using an analytical formula.
 
-    :param alpha_y (float): a positive number
-    :param lambda_z (float): a positive number
-    :param lambda_x (float): a positive number
+    @param alpha_y (float): a positive number
+    @param lambda_z (float): a positive number
+    @param lambda_x (float): a positive number
     """
     theta = 1/(alpha_y*lambda_x/lambda_z - 1)
     return theta
-
 
 def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
     """
@@ -73,10 +65,10 @@ def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
         generate data following the specified distributions.
         Should be of class "rv_continuous" from scipy.stats
 
-    :param distrib_y: distribution of Y, instance of rv_continuous
-    :param distrib_z: distribution of Z, instance of rv_continuous
-    :param distrib_x: distribution of X, instance of rv_continuous
-    :param size (int): sample size for each vector
+    @param distrib_y: distribution of Y, instance of rv_continuous
+    @param distrib_z: distribution of Z, instance of rv_continuous
+    @param distrib_x: distribution of X, instance of rv_continuous
+    @param size (int): sample size for each vector
     """
     y = distrib_y.ppf(np.random.uniform(size=size))
     z = distrib_z.ppf(np.random.uniform(size=size))
@@ -85,26 +77,25 @@ def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
     return y, z, x
 
 
-# ---------------------
+# ------------------------------------------------------------------------------------
 # OBSERVED RANKS
-# ---------------------
-
+# ------------------------------------------------------------------------------------
 def true_theta_observed_rank(distrib_y, distrib_u, size=10000):
     """
     true_theta:
         compute the true value of theta,
         by simulation since analytical formula is not possible.
 
-    :param distrib_y: distribution of Y
-    :param distrib_u: distribution of U
-    :param size (int): sample size
+    @param distrib_y: distribution of Y
+    @param distrib_u: distribution of U
+    @param size (int): sample size
     """
     Q_y = distrib_y.ppf # Quantile function of Y
     Q_u = distrib_u.ppf # Quantile function of U
 
     U = np.random.uniform(size=size)
     U_tilde = Q_y(Q_u(U))
-    theta = U_tilde.mean()
+    theta = np.mean(U_tilde)
     return theta
 
 
@@ -114,9 +105,9 @@ def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
         generate data following the specified distributions.
         Should be of class "rv_continuous" from scipy.stats
 
-    :param distrib_y: distribution of Y, instance of rv_continuous
-    :param distrib_u: distribution of U, instance of rv_continuous
-    :param size (int): sample size for each vector
+    @param distrib_y: distribution of Y, instance of rv_continuous
+    @param distrib_u: distribution of U, instance of rv_continuous
+    @param size (int): sample size for each vector
     """
     y = distrib_y.ppf(np.random.uniform(size=size))
     u = distrib_u.ppf(np.random.uniform(size=size))
@@ -124,9 +115,9 @@ def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
     return y, u, theta0
 
 
-# ---------------------
+# ------------------------------------------------------------------------------------
 # PERFORMANCE REPORT
-# ---------------------
+# ------------------------------------------------------------------------------------
 
 def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     """
@@ -134,10 +125,10 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
         creates the report for simulations,
         computes bias, MSE, MAE and coverage rate.
 
-    :param y_hat (np.array): B x K np.array of B simulations for K estimators
-    :param theta0 (float): scalar, true value of theta
-    :param n_obs (int): sample size used during simulations
-    :param histograms (bool): whether to draw the histograms
+    @param y_hat (np.array): B x K np.array of B simulations for K estimators
+    @param theta0 (float): scalar, true value of theta
+    @param n_obs (int): sample size used during simulations
+    @param histograms (bool): whether to draw the histograms
     """
     sigma = kwargs.get('sigma', np.ones(y_hat.shape))
     file = kwargs.get('file', 'default_output_file')
@@ -154,9 +145,9 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0)
     report['CI size'] = 2*norm.ppf(0.975)*sigma.mean(axis=0)
 
-    print('Theta_0: {:.2f}'.format(report['theta0']))
-    print("Number of simulations: {} \n".format(report['n_simu']))
-    print("Sample size: {} \n".format(report['n_obs']))
+    print('Theta_0: {:.2f}'.format(report.get('theta0')))
+    print("Number of simulations: {} \n".format(report.get('n_simu')))
+    print("Sample size: {} \n".format(report.get('n_obs')))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         print(metric+': ')
         for model in y_centered.columns:
@@ -194,10 +185,10 @@ def latex_table(results, file, models=['standard','smoothed', 'smoothed_lewbel-s
     """
     latex_table:
         outputs a latex table from a list of results
-    :param results: list of results based on the format results[sample_size][metric][model]
-    :param file (str): name of the output file
-    :param models (list of str): list of the models
-    :param digits (int): dedines the precision
+    @param results: list of results based on the format results[sample_size][metric][model]
+    @param file (str): name of the output file
+    @param models (list of str): list of the models
+    @param digits (int): dedines the precision
     """
     metrics_set = ['bias', 'MAE', 'RMSE', 'Coverage rate', 'Quantile .95']
     k=0
@@ -248,27 +239,20 @@ def latex_table(results, file, models=['standard','smoothed', 'smoothed_lewbel-s
 
 
 if __name__ == '__main__':
-    print('='*80)
     print('THIS IS AN EXAMPLE USING EXPONENTIAL DGP')
-    print('='*80)
-
-    for output_dir in ['output/', 'output/raw/']:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
 
     print('='*80)
     print('LOADING THE CONFIG')
     print('='*80)
 
-    config_file = 'DGP_exponential/EXPONENTIAL_example.yml'
-
-    with open(config_file, 'r') as stream:
+    CONFIG_FILE = 'DGP_exponential/EXPONENTIAL_example.yml'
+    with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
 
-    B = config['nb_simu']
-    lambda_x = config['lambda_x']
-    lambda_z = config['lambda_z']
-    alpha_y = config['alpha_y']
+    B = config.get('nb_simu')
+    lambda_x = config.get('lambda_x')
+    lambda_z = config.get('lambda_z')
+    alpha_y = config.get('alpha_y')
 
 
     print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
@@ -298,7 +282,7 @@ if __name__ == '__main__':
     print('='*80)
 
     nb_estimators = 5
-    sample_size_set = config['sample_size']
+    sample_size_set = config.get('sample_size')
     big_results = {}
 
     for sample_size in sample_size_set:
@@ -306,7 +290,7 @@ if __name__ == '__main__':
         with open(outfile+'.txt', "a") as f:
             f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
 
-        random.seed(999)
+        np.random.seed(999)
         results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
 
         start_time = time.time()
@@ -331,7 +315,7 @@ if __name__ == '__main__':
             sigma[b,] = [sigma_standard, sigma_standard_x, sigma_smooth, sigma_ls, sigma_x]
 
             # Checking division error
-            if math.isinf(sigma_smooth) or np.isnan(sigma_ls):
+            if np.isinf(sigma_smooth) or np.isnan(sigma_ls):
                 print(' -- error for this iteration')
                 results[b,] = [np.nan]*nb_estimators
                 sigma[b,] = [np.nan]*nb_estimators

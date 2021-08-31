@@ -7,22 +7,19 @@ Created on Thu Nov 19 09:56:39 2020
 
 @author: jeremylhour
 """
-import os
 import yaml
 import pickle
 
 if __name__ == '__main__':
     ########## LOAD MAIN CONFIG ##########
-    config_file = os.path.join(os.getcwd(),'DGP_exponential/EXPONENTIAL_config.yml')
-    
-    with open(config_file, 'r') as stream:
+    CONFIG_FILE = 'DGP_exponential/EXPONENTIAL_config.yml'
+    with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
-    B = config['nb_simu']
-    lambda_x = config['lambda_x']
-    lambda_z = config['lambda_z']
-    alpha_y = config['alpha_y']
-    
+    B = config.get('nb_simu')
+    lambda_x = config.get('lambda_x')
+    lambda_z = config.get('lambda_z')
+    alpha_y = config('alpha_y')
     colours = False
     
     ########## CREATING TABLE ##########

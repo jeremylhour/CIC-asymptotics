@@ -18,15 +18,14 @@ if __name__ == '__main__':
     job_file = 'job_list.txt'
     
     ########## INPUT PARAMETERS ##########
-    config_file = os.path.join(os.getcwd(),'DGP_gaussian/GAUSSIAN_config.yml')
-    
-    with open(config_file, 'r') as stream:
+    CONFIG_FILE = os.path.join(os.getcwd(),'DGP_gaussian/GAUSSIAN_config.yml')
+    with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
-    nb_simu = config['nb_simu']
-    sample_size = config['sample_size']
-    mu_x = config['mu_x']
-    variance_x = config['variance_x']
+    nb_simu = config.get('nb_simu')
+    sample_size = config.get('sample_size')
+    mu_x = config.get('mu_x')
+    variance_x = config.get('variance_x')
     
     print('Creating requested YAML files...')
     

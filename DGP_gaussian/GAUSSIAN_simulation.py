@@ -20,9 +20,6 @@ Created on Mon Nov  9 12:07:05 2020
 @author: jeremylhour
 """
 import sys, os
-
-sys.path.append(os.path.join(os.getcwd(), "functions/"))
-
 import numpy as np
 import pandas as pd
 import random
@@ -31,8 +28,8 @@ import yaml
 import math
 import pickle
 
-from func_main import estimator_unknown_ranks
-from func_simu import generate_data, performance_report
+from src.mainFunctions import estimator_unknown_ranks
+from src.simulations import generate_data, performance_report
 
 from scipy.stats import norm
 
@@ -46,9 +43,9 @@ if __name__ == '__main__':
     with open(config_file, "r") as stream:
         config = yaml.safe_load(stream)
     
-    B = config["nb_simu"]
-    variance_x = config["variance_x"]
-    mu_x = config["mu_x"]
+    B = config.get("nb_simu")
+    variance_x = config.get("variance_x")
+    mu_x = config.get("mu_x")
     
     
     print(f"mu_x={mu_x}",

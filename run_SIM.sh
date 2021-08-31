@@ -1,15 +1,26 @@
-# --------------------------------
+# --------------------------------------------------------------
 # CIC ASYMPTOTICS
 #
 # MAIN SCRIPT TO RUN SIMULATIONS
 #
 # @author: jeremy.l.hour@ensae.fr
-# -------------------------------
+# --------------------------------------------------------------
 
 EXPERIMENT=GAUSSIAN # [EXPONENTIAL, GAUSSIAN]
+INSTALL=false
 
 
 ########## DO NO MODIFY BELOW ##########
+mkdir output/
+mkdir output/raw/
+
+if [ "$INSTALL" = true ] ; then
+    echo INSTALLING PACKAGES
+    sudo apt-get update
+    sudo install parallel
+    sudo install zip
+    pip install -r requirements.txt
+fi
 
 experiment=$(echo "$EXPERIMENT" | tr '[:upper:]' '[:lower:]')
 
