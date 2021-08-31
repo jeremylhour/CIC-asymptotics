@@ -14,8 +14,7 @@ python3 DGP_exponential/EXPONENTIAL_simulation.py DGP_exponential/EXPONENTIAL_ex
 
 You can run an example by doing :
 ```
-cd functions/
-python3 func_simu.py
+python3 src/simulations.py
 ```
 
 ## Parallel computing
@@ -45,7 +44,7 @@ sudo apt-get install zip
 
 ## Important folders
 
-- [functions](functions/): contains all the necessary functions broken down by theme,
+- [src](src/): contains all the necessary functions broken down by theme,
 - [test_scripts](test_scripts/): contains scripts that were used to develop the functions.
 
 ## Other folders
