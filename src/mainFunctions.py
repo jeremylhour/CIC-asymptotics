@@ -32,7 +32,7 @@ def inv_density_LS(u_hat, y):
     u_hat = np.unique(np.sort(u_hat)) # order and remove duplicates
     F_inverse = np.quantile(y, u_hat)
     inv_density = (F_inverse[1:] - F_inverse[:-1]) / (u_hat[1:] - u_hat[:-1])
-    u_hat = (u_hat[1:] + u_hat[:-1])/2 # replaces u_hat by the average of two consecutive u_hat
+    u_hat = (u_hat[1:] + u_hat[:-1]) / 2 # replaces u_hat by the average of two consecutive u_hat
     return u_hat, inv_density
 
 @njit
@@ -156,14 +156,12 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     """
     if se_method == "kernel":
         inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
-        
     elif se_method == "lewbel-schennach":
         u_hat, inv_density = inv_density_LS(u_hat=u_hat, y=y)
-    
     elif se_method == "xavier":
         inv_density = inv_density_Xavier(u_hat=u_hat, y=y)
     else:
-        raise ValueError("se_method arg should be kernel, lewbel-schennach or xavier.")
+        raise ValueError("se_method arg should be 'kernel', 'lewbel-schennach' or 'xavier'.")
         
     """
     compute_zeta:
@@ -207,8 +205,7 @@ def estimator_known_ranks(y, u):
     VERIFIER QUE C'EST BON!!!
     """
     inv_density = 1/kernel_density_estimator(x=np.quantile(y, u), data=y) 
-    counterfactual_y = np.quantile(y, u)
-    theta_hat = np.mean(counterfactual_y) 
+    counterfactual_y, theta_hat = compute_theta(u_hat=u, y=y)
             
     """
     compute_zeta:

@@ -19,7 +19,7 @@ Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
 """
-import sys, os
+import sys
 import numpy as np
 import pandas as pd
 import random
@@ -28,8 +28,10 @@ import yaml
 import math
 import pickle
 
-from src.mainFunctions import estimator_unknown_ranks
-from src.simulations import generate_data, performance_report
+sys.path.append("src/")
+
+from mainFunctions import estimator_unknown_ranks
+from simulations import generate_data, performance_report
 
 from scipy.stats import norm
 
@@ -38,8 +40,7 @@ if __name__ == '__main__':
     print('LOADING CONFIG')
     print('='*80)
 
-    config_file = os.path.join(os.getcwd(), sys.argv[1])
-    
+    config_file = sys.argv[1]
     with open(config_file, "r") as stream:
         config = yaml.safe_load(stream)
     

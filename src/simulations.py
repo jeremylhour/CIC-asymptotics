@@ -17,9 +17,9 @@ import time
 import yaml
 import pickle
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
-from scipy.stats import norm
-from scipy.stats import expon, pareto
+from scipy.stats import norm, expon, pareto
 
 from mainFunctions import estimator_unknown_ranks
 
@@ -56,8 +56,7 @@ def analytical_theta(alpha_y, lambda_z, lambda_x):
     @param lambda_z (float): a positive number
     @param lambda_x (float): a positive number
     """
-    theta = 1/(alpha_y*lambda_x/lambda_z - 1)
-    return theta
+    return 1/(alpha_y*lambda_x/lambda_z - 1)
 
 def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
     """
@@ -73,7 +72,6 @@ def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
     y = distrib_y.ppf(np.random.uniform(size=size))
     z = distrib_z.ppf(np.random.uniform(size=size))
     x = distrib_x.ppf(np.random.uniform(size=size))
-    #theta0 = true_theta(distrib_y=distrib_y, distrib_z=distrib_z, distrib_x=distrib_x, size = 100000)
     return y, z, x
 
 
@@ -119,7 +117,7 @@ def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
 # PERFORMANCE REPORT
 # ------------------------------------------------------------------------------------
 
-def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
+def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=None):
     """
     performance_report:
         creates the report for simulations,
@@ -130,8 +128,10 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, **kwargs):
     @param n_obs (int): sample size used during simulations
     @param histograms (bool): whether to draw the histograms
     """
-    sigma = kwargs.get('sigma', np.ones(y_hat.shape))
-    file = kwargs.get('file', 'default_output_file')
+    if sigma is None:
+        sigma = np.ones(y_hat.shape)
+    if file is None:
+        file = 'default_output_file'
 
     y_centered = y_hat - theta0
     report = {}
@@ -266,9 +266,9 @@ if __name__ == '__main__':
 
 
     ########## SAVING TO FILE ###########
-    outfile = 'output/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
+    OUT_FILE = 'output/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)
 
-    with open(outfile+'.txt', "a") as f:
+    with open(OUT_FILE+'.txt', "a") as f:
         f.write('\n')
         f.write('lambda_x={:.2f} -- lambda_z={:.2f} -- alpha_y={:.2f} \n'.format(lambda_x, lambda_z, alpha_y),)
         f.write('Parameter values give b_2={:.2f} \n'.format(1-lambda_x/lambda_z))
@@ -287,17 +287,14 @@ if __name__ == '__main__':
 
     for sample_size in sample_size_set:
         print('Running {} simulations with sample size {}...'.format(B, sample_size))
-        with open(outfile+'.txt', "a") as f:
+        with open(OUT_FILE+'.txt', "a") as f:
             f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
 
         np.random.seed(999)
         results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
 
         start_time = time.time()
-        for b in range(B):
-            sys.stdout.write("\r{0}".format(b))
-            sys.stdout.flush()
-
+        for b in tqdm(range(B)):
             y, z, x =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
                                      distrib_z = expon(scale=1/lambda_z),
                                      distrib_x = expon(scale=1/lambda_x),
@@ -342,7 +339,7 @@ if __name__ == '__main__':
                                  'smooth_ls': sigma[3],
                                  'smooth_xavier': sigma[4]})
 
-        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile)
+        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=OUT_FILE)
 
 
     print('='*80)

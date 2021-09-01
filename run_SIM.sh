@@ -17,9 +17,8 @@ mkdir output/raw/
 if [ "$INSTALL" = true ] ; then
     echo INSTALLING PACKAGES
     sudo apt-get update
-    sudo install parallel
-    sudo install zip
-    pip install -r requirements.txt
+    sudo apt-get install parallel -y
+    sudo apt-get install zip -y
 fi
 
 experiment=$(echo "$EXPERIMENT" | tr '[:upper:]' '[:lower:]')

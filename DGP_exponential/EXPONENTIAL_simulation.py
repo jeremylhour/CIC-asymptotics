@@ -17,8 +17,7 @@ Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
 """
-import sys, os
-
+import sys
 import numpy as np
 import pandas as pd
 import random
@@ -27,8 +26,10 @@ import yaml
 import math
 import pickle
 
-from src.mainFunctions import estimator_unknown_ranks
-from src.simulations import analytical_theta, generate_data, performance_report 
+sys.path.append("src/")
+
+from mainFunctions import estimator_unknown_ranks
+from simulations import analytical_theta, generate_data, performance_report 
 
 from scipy.stats import expon, pareto
    
@@ -38,18 +39,16 @@ if __name__ == '__main__':
     print('LOADING THE CONFIG')
     print('='*80)
     
-    config_file = os.path.join(os.getcwd(),sys.argv[1])
-    
-    with open(config_file, 'r') as stream:
+    CONFIG_FILE = sys.argv[1]
+    with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
-    B = config['nb_simu']
+    B = config.get('nb_simu')
+    lambda_x = config.get('lambda_x')
+    lambda_z = config.get('lambda_z')
+    alpha_y = config.get('alpha_y')
+    sample_size_set = config.get('sample_size')
     
-    lambda_x = config['lambda_x']
-    lambda_z = config['lambda_z']
-    alpha_y = config['alpha_y']
-    
-        
     print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
           f'Parameter values give b_2={round(1-lambda_x/lambda_z, 2)}',
           f'Parameter values give d_2={round(1/alpha_y, 2)}',
@@ -77,7 +76,6 @@ if __name__ == '__main__':
     print('='*80)
     
     nb_estimators = 5
-    sample_size_set = config['sample_size']
     big_results = {}
     
     for sample_size in sample_size_set:
@@ -93,10 +91,12 @@ if __name__ == '__main__':
             sys.stdout.write("\r{0}".format(b))
             sys.stdout.flush()
             
+            # Simulate data
             y, z, x =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
                                      distrib_z = expon(scale=1/lambda_z),
                                      distrib_x = expon(scale=1/lambda_x),
                                      size = sample_size)
+            
             # Estimator and standard error
             theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
             theta_standard_x, sigma_standard_x = estimator_unknown_ranks(y, x, z, method="standard", se_method="xavier")

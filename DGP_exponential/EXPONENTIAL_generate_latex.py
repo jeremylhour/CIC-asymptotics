@@ -19,11 +19,13 @@ if __name__ == '__main__':
     B = config.get('nb_simu')
     lambda_x = config.get('lambda_x')
     lambda_z = config.get('lambda_z')
-    alpha_y = config('alpha_y')
+    alpha_y = config.get('alpha_y')
     colours = False
     
     ########## CREATING TABLE ##########
-    print('Creating LaTeX table ...')
+    print("="*80)
+    print('CREATING LaTeX TABLE')
+    print("="*80)
     
     ########## PARAMETERS ##########
     models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier']
@@ -39,63 +41,61 @@ if __name__ == '__main__':
     ########## CORE CODE ##########
     counter = 0
     
-    f = open('output/EXPONENTIAL_simulation.tex', "w")
-    
-    for i in lambda_x:
-        for j in lambda_z:
-            for k in alpha_y:
-                pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)
-                try:
-                    result = pickle.load(open(pickle_file+'.p','rb'))
-                except:
-                    continue
-                
-                param_line = r' & \multicolumn{'+str(len(metrics_set)*len(result))+'}{c}{'+'$\lambda_X$='+str(i)+', $\lambda_Z$='+str(j)+r', $\alpha_Y$='+str(k)+' -- $b_2+d_2$='+ str(round(1-i/j+1/k, 2))+'}'  
-                param_line = param_line+'\\\\'
-                for model in models:
-                    counter += 1
-                    string = model.replace('_', ' ')
-                    item = 'model'
-                    sample_line = ' '
-                    header = r'\begin{longtable}{l|'
-                    for sample_size in result:
-                        sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+'n='+str(sample_size)+'}'
-                        header = header + ('c'*len(metrics_set))
-                        for metric in metrics_set:
-                            string = string+' & '+str(round(result[sample_size][metric][model], digits))
-                            item = item+' & '+metric
-                    string = string +'\\\\'
-                    item = item +'\\\\'
-                    sample_line = sample_line +'\\\\'
-                    header = header + '}'
-                    
-                    ### WRITING
-                    if counter == 1:
-                        f.write(header)
+    with open('output/EXPONENTIAL_simulation.tex', "w") as f:
+        for i in lambda_x:
+            for j in lambda_z:
+                for k in alpha_y:
+                    pickle_file = 'output/raw/simulations_B='+str(B)+'_lambda_x='+str(i)+'_lambda_z='+str(j)+'_alpha_y='+str(k)
+                    try:
+                        result = pickle.load(open(pickle_file+'.p','rb'))
+                    except:
+                        continue
+
+                    param_line = r' & \multicolumn{'+str(len(metrics_set)*len(result))+'}{c}{'+'$\lambda_X$='+str(i)+', $\lambda_Z$='+str(j)+r', $\alpha_Y$='+str(k)+' -- $b_2+d_2$='+ str(round(1-i/j+1/k, 2))+'}'  
+                    param_line = param_line+'\\\\'
+                    for model in models:
+                        counter += 1
+                        string = model.replace('_', ' ')
+                        item = 'model'
+                        sample_line = ' '
+                        header = r'\begin{longtable}{l|'
+                        for sample_size in result:
+                            sample_line = sample_line+ r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+'n='+str(sample_size)+'}'
+                            header = header + ('c'*len(metrics_set))
+                            for metric in metrics_set:
+                                string = string+' & '+str(round(result[sample_size][metric][model], digits))
+                                item = item+' & '+metric
+                        string = string +'\\\\'
+                        item = item +'\\\\'
+                        sample_line = sample_line +'\\\\'
+                        header = header + '}'
+
+                        ### WRITING
+                        if counter == 1:
+                            f.write(header)
+                            f.write('\n')
+                            f.write(r'\caption{}\\')
+                            f.write('\n')
+                            f.write(r'\toprule')
+                            f.write('\n')
+                            f.write(sample_line)
+                            f.write('\n')
+                            f.write(item)
+                            f.write('\n')
+                            f.write(r'\hline')
+                            f.write('\n')
+                        if model == models[0]:
+                            f.write(r'\hline')
+                            f.write('\n')
+                            f.write(param_line)
+                            f.write('\n')
+
+                        if colours:
+                            f.write(r'\rowcolor{'+color_dico[i]+'} ')
+                        f.write(string)
                         f.write('\n')
-                        f.write(r'\caption{}\\')
-                        f.write('\n')
-                        f.write(r'\toprule')
-                        f.write('\n')
-                        f.write(sample_line)
-                        f.write('\n')
-                        f.write(item)
-                        f.write('\n')
-                        f.write(r'\hline')
-                        f.write('\n')
-                    if model == models[0]:
-                        f.write(r'\hline')
-                        f.write('\n')
-                        f.write(param_line)
-                        f.write('\n')
-                        
-                    if colours:
-                        f.write(r'\rowcolor{'+color_dico[i]+'} ')
-                    f.write(string)
-                    f.write('\n')
-    
-    f.write(r'\bottomrule')
-    f.write('\n')
-    f.write(r'\end{longtable}')
-    f.write('\n')
-    f.close()
+
+        f.write(r'\bottomrule')
+        f.write('\n')
+        f.write(r'\end{longtable}')
+        f.write('\n')

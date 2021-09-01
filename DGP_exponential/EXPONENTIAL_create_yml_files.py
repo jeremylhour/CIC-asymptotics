@@ -12,24 +12,28 @@ import os
 import yaml
 
 if __name__ == '__main__':
+    print("="*80)
+    print('LOADING CONFIG')
+    print("="*80)
+    
     if not os.path.exists('input_configs_EXPONENTIAL'):
         os.makedirs('input_configs_EXPONENTIAL')
     
-    job_file = 'job_list.txt'
-    
-    ########## INPUT PARAMETERS ##########
-    config_file = os.path.join(os.getcwd(),'DGP_exponential/EXPONENTIAL_config.yml')
-    
-    with open(config_file, 'r') as stream:
+    JOB_FILE = 'job_list.txt'
+    CONFIG_FILE ='DGP_exponential/EXPONENTIAL_config.yml'
+    with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
-    nb_simu = config['nb_simu']
-    sample_size = config['sample_size']
-    lambda_x = config['lambda_x']
-    lambda_z = config['lambda_z']
-    alpha_y = config['alpha_y']
+    # Allocate params
+    nb_simu = config.get('nb_simu')
+    sample_size = config.get('sample_size')
+    lambda_x = config.get('lambda_x')
+    lambda_z = config.get('lambda_z')
+    alpha_y = config.get('alpha_y')
     
-    print('Creating requested YAML files ...')
+    print("="*80)
+    print('CREATING REQUESTED YAML FILES')
+    print("="*80)
     
     for i in lambda_x:
         for j in lambda_z:
@@ -43,7 +47,7 @@ if __name__ == '__main__':
                         f.write('lambda_z: {}         # Parameter of exponential distribution for Z\n'.format(j))
                         f.write('alpha_y: {}         # Parameter of Pareto distribution for Y\n'.format(k))
 
-                    with open(job_file, 'a') as g:
+                    with open(JOB_FILE, 'a') as g:
                         g.write(file_name+'\n')
                 else:
                     print('Bad DGP : lambda_x='+str(i)+', lambda_z='+str(j)+', alpha_y='+str(k)+' -- true value theta_0 is not finite.')
