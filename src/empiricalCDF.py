@@ -4,7 +4,7 @@
 Functions related to estimation of empirical CDF,
 mainly smoothed empirical CDF as in Shorack and Wellner
 
-Modified to be able to use numba
+Compile with numba for improved speed of execution.
 
 Created on Mon Nov  9 13:43:00 2020
 

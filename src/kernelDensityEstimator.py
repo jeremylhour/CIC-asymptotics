@@ -3,7 +3,7 @@
 """
 Functions related to kernel density estimation.
 
-Modified to be able to use numba
+Compile with numba for improved speed of execution.
 
 Created on Tue Nov 10 18:26:34 2020
 
@@ -52,7 +52,7 @@ def kernel_density_estimator(x, data, kernel=gaussian_kernel):
     @param kernel (function): function for the kernel  
     """
     h_silverman = 1.06 * data.std() / (len(data)**(1/5))
-    y = (np.expand_dims(x, 1) - data) / h_silverman # Broadcast to an array dimension len(x) * len(data)
+    y = (np.expand_dims(x, 1) - data) / h_silverman # Broadcast to an array dimension (len(x), len(data))
     y = kernel(y) / h_silverman
     return np.array([np.mean(y[i]) for i in range(len(y))])
 

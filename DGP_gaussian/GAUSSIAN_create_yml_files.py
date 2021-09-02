@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Create YML files for parallel computing,
-from a main YML file.
+Create YAML files for parallel computing, from a main YAML file.
+Gaussian DGP
 
 Created on Tue Nov 17 17:13:30 2020
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     job_file = 'job_list.txt'
     
     ########## INPUT PARAMETERS ##########
-    CONFIG_FILE = os.path.join(os.getcwd(),'DGP_gaussian/GAUSSIAN_config.yml')
+    CONFIG_FILE = 'DGP_gaussian/GAUSSIAN_config.yml'
     with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
@@ -27,7 +27,9 @@ if __name__ == '__main__':
     mu_x = config.get('mu_x')
     variance_x = config.get('variance_x')
     
-    print('Creating requested YAML files...')
+    print("="*80)
+    print('CREATING REQUESTED YAML FILES')
+    print("="*80)
     
     for i in mu_x:
         for j in variance_x:
@@ -37,6 +39,6 @@ if __name__ == '__main__':
                 f.write('sample_size: {}    # Sample size, should be an array\n'.format(sample_size))
                 f.write('mu_x: {}        # Mean of X\n'.format(i))
                 f.write('variance_x: {}         # Variance of X\n'.format(j))
-        
+                
             with open(job_file, 'a') as g:
                 g.write(file_name+'\n')

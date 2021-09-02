@@ -11,9 +11,6 @@ INSTALL=false
 
 
 ########## DO NO MODIFY BELOW ##########
-mkdir output/
-mkdir output/raw/
-
 if [ "$INSTALL" = true ] ; then
     echo INSTALLING PACKAGES
     sudo apt-get update
@@ -28,7 +25,7 @@ rm -r input_configs_${EXPERIMENT}/
 rm -f job_list.txt
 rm -r output/
 
-echo CREATING CONFIG FILES
+echo CREATING CONFIG FILES FOR INPUT
 python3 DGP_${experiment}/${EXPERIMENT}_create_yml_files.py
 
 echo RUNNING SIMULATIONS

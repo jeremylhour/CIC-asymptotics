@@ -4,7 +4,7 @@
 Main high-level functions for computing the estimator.
 The main function is estimator_unknown_ranks.
 
-Now use numba for improved speed of execution.
+Compile with numba improved speed of execution.
 
 Created on Wed Nov 11 12:02:50 2020
 
@@ -19,12 +19,17 @@ from kernelDensityEstimator import kernel_density_estimator
 from empiricalCDF import smoothed_ecdf
 
 # ------------------------------------------------------------------------------------
-# LOW-LEVEL FUNCTIONS
+# LOWER-LEVEL FUNCTIONS
 # ------------------------------------------------------------------------------------
 @njit
 def inv_density_LS(u_hat, y):
     """
-    returns u_hat and inv_density using the Lewbel-Schennach method
+    returns u_hat and inv_density using the Lewbel-Schennach (2007) method.
+    Also changes the u_hat by removing duplicates
+    
+    Source :
+        "A Simple Ordered Data Estimator For Inverse Density Weighted Functions,"
+        Arthur Lewbel and Susanne Schennach, Journal of Econometrics, 2007, 186, 189-211.
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param y (np.array): outcome
@@ -108,9 +113,6 @@ def compute_theta(u_hat, y):
     theta_hat = np.mean(counterfactual_y)
     return counterfactual_y, theta_hat
 
-# ------------------------------------------------------------------------------------
-# UNKNOWN RANKS
-# ------------------------------------------------------------------------------------
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
     """
     counterfactual ranks:
@@ -130,6 +132,9 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
         raise ValueError("method argument for counterfactual ranks needs to be either 'smoothed' or 'standard'")
     return u_hat
 
+# ------------------------------------------------------------------------------------
+# UNKNOWN RANKS
+# ------------------------------------------------------------------------------------
 def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     """
     estimator_unknown_ranks:
@@ -142,9 +147,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     @param se_method (str): can be "kernel", "lewbel-schennach" or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
     """
-    u_hat = counterfactual_ranks(points_to_predict=x,
-                                 points_for_distribution=z,
-                                 method=method)
+    u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
         
     """
     Estimator of theta
@@ -189,7 +192,6 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     se = np.sqrt(np.mean(zeta**2) + np.mean(phi**2) + np.mean(epsilon**2))
 
     return theta_hat, se/np.sqrt(len(y))
-            
 
 # ------------------------------------------------------------------------------------
 # KNOWN RANKS
@@ -198,11 +200,13 @@ def estimator_known_ranks(y, u):
     """
     estimator_known_ranks:
         computes the estimator (1), i.e. average of quantiles of the outcome for each rank
+    
+    WARNING : 
+        This function is a particular case of the previous one,
+        it can probably be included with the right options, but I haven't took the time to do it.
         
     @param y: np.array of the outcome -- corresponds to outcome of untreated group at date 1.
     @param u: np.array of the ranks
-    
-    VERIFIER QUE C'EST BON!!!
     """
     inv_density = 1/kernel_density_estimator(x=np.quantile(y, u), data=y) 
     counterfactual_y, theta_hat = compute_theta(u_hat=u, y=y)

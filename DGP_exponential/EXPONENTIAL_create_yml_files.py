@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Create YML files for parallel computing,
-from a main YML file and add to a list of jobs to run.
+Create YAML files for parallel computing, from a main YAML file.
+Exponential DGP
 
 Created on Tue Nov 17 17:13:30 2020
 
@@ -18,8 +18,8 @@ if __name__ == '__main__':
     
     if not os.path.exists('input_configs_EXPONENTIAL'):
         os.makedirs('input_configs_EXPONENTIAL')
-    
     JOB_FILE = 'job_list.txt'
+    
     CONFIG_FILE ='DGP_exponential/EXPONENTIAL_config.yml'
     with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)

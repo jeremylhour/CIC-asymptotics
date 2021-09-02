@@ -30,11 +30,11 @@ def true_theta(distrib_y, distrib_z, distrib_x, size=10000):
     """
     true_theta:
         compute the true value of theta,
-        by simulation since analytical formula is not possible.
+        by simulation since analytical formula is available.
 
-    @param distrib_y: distribution of Y
-    @param distrib_z: distribution of Z
-    @param distrib_x: distribution of X
+    @param distrib_y (scipy.stats distrib): distribution of Y
+    @param distrib_z (scipy.stats distrib): distribution of Z
+    @param distrib_x (scipy.stats distrib): distribution of X
     """
     Q_y = distrib_y.ppf # Quantile function of Y
     F_z = distrib_z.cdf # CDF of Z
@@ -64,9 +64,9 @@ def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
         generate data following the specified distributions.
         Should be of class "rv_continuous" from scipy.stats
 
-    @param distrib_y: distribution of Y, instance of rv_continuous
-    @param distrib_z: distribution of Z, instance of rv_continuous
-    @param distrib_x: distribution of X, instance of rv_continuous
+    @param distrib_y (scipy.stats distrib): distribution of Y, instance of rv_continuous
+    @param distrib_z (scipy.stats distrib): distribution of Z, instance of rv_continuous
+    @param distrib_x (scipy.stats distrib): distribution of X, instance of rv_continuous
     @param size (int): sample size for each vector
     """
     y = distrib_y.ppf(np.random.uniform(size=size))
@@ -82,7 +82,7 @@ def true_theta_observed_rank(distrib_y, distrib_u, size=10000):
     """
     true_theta:
         compute the true value of theta,
-        by simulation since analytical formula is not possible.
+        by simulation since analytical formula is not avilable.
 
     @param distrib_y: distribution of Y
     @param distrib_u: distribution of U
@@ -116,7 +116,6 @@ def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
 # ------------------------------------------------------------------------------------
 # PERFORMANCE REPORT
 # ------------------------------------------------------------------------------------
-
 def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=None):
     """
     performance_report:
@@ -134,6 +133,7 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
         file = 'default_output_file'
 
     y_centered = y_hat - theta0
+    
     report = {}
     report['theta0'] = theta0
     report['n_simu'] = len(y_hat)
@@ -145,9 +145,9 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
     report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0)
     report['CI size'] = 2*norm.ppf(0.975)*sigma.mean(axis=0)
 
-    print('Theta_0: {:.2f}'.format(report.get('theta0')))
+    print('Theta_0: {:.2f}'.format(theta0))
     print("Number of simulations: {} \n".format(report.get('n_simu')))
-    print("Sample size: {} \n".format(report.get('n_obs')))
+    print("Sample size: {} \n".format(n_obs))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         print(metric+': ')
         for model in y_centered.columns:
@@ -177,7 +177,6 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
             ax.set_title(r'Histogram for model: '+model)
             fig.tight_layout()
             plt.savefig(file+'_n='+str(n_obs)+'_'+model+'.jpg',dpi=(96))
-
     return report
 
 
