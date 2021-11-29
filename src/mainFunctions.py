@@ -4,7 +4,7 @@
 Main high-level functions for computing the estimator.
 The main function is estimator_unknown_ranks.
 
-Compile with numba improved speed of execution.
+Compile with numba for improved speed of execution.
 
 Created on Wed Nov 11 12:02:50 2020
 
@@ -19,13 +19,14 @@ from kernelDensityEstimator import kernel_density_estimator
 from empiricalCDF import smoothed_ecdf
 
 # ------------------------------------------------------------------------------------
-# LOWER-LEVEL FUNCTIONS
+# INVERSE DENSITY ESTIMATORS
 # ------------------------------------------------------------------------------------
 @njit
 def inv_density_LS(u_hat, y):
     """
-    returns u_hat and inv_density using the Lewbel-Schennach (2007) method.
-    Also changes the u_hat by removing duplicates
+    inv_density_LS :
+        returns u_hat and inv_density using the Lewbel-Schennach (2007) method.
+        Also changes the u_hat by removing duplicates
     
     Source :
         "A Simple Ordered Data Estimator For Inverse Density Weighted Functions,"
@@ -33,6 +34,8 @@ def inv_density_LS(u_hat, y):
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param y (np.array): outcome
+    
+    @return u_hat, inv_density (np.array)
     """
     u_hat = np.unique(np.sort(u_hat)) # order and remove duplicates
     F_inverse = np.quantile(y, u_hat)
@@ -41,39 +44,57 @@ def inv_density_LS(u_hat, y):
     return u_hat, inv_density
 
 @njit
-def inv_density_Xavier(u_hat, y):
+def inv_density_Xavier(u_hat, y, spacing_2=True):
     """
-    returns inv_density using the Xavier method
+    inv_density_Xavier :
+        returns inv_density using the Xavier method
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param y (np.array): outcome
+    @param spacing_2 (bool): If True, two spacings between data points as in the points used for U_i will be
+        U_i+ and U_i-. If not, it's U_i+ and U_i
+    
+    @return inv_density (np.array)
     """
     u_hat = np.sort(u_hat)
     # find distinct values just above and just below
     ub, lb  = [], []
     for u in u_hat:
+        # ABOVE -- upper bound
         if u == np.max(u_hat):
             ub.append(u)
         else:
-            ub.append(np.min(np.array([i for i in u_hat if i > u])))
+            ub.append(np.min(np.array([item for item in u_hat if item > u])))
         
+        # BELOW -- lower bound
         if u == np.min(u_hat):
             lb.append(u)
         else:
-            lb.append(np.max(np.array([i for i in u_hat if i < u])))
+            if spacing_2 or u == np.max(u_hat):
+                lb.append(np.max(np.array([item for item in u_hat if item < u])))
+            else:
+                lb.append(u)
+                
     ub, lb = np.array(ub), np.array(lb)
     inv_density = (np.quantile(y, ub) - np.quantile(y, lb)) / (ub - lb)
     return inv_density
 
+# ------------------------------------------------------------------------------------
+# LOWER-LEVEL FUNCTIONS
+# ------------------------------------------------------------------------------------
 @njit
 def compute_zeta(u_hat, inv_density, size):
     """
-    function to compute zeta,
-    similar to Q in Athey and Imbens (2006).
+    compute_zeta :
+        function to compute zeta,
+        similar to Q in Athey and Imbens (2006).
+        In our paper, it might be called 'eta' instead.
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param inv_density (np.array): output of any of the inv_density functions
     @param size (int): size of the support
+    
+    @return zeta (np.array)
     """
     support = np.linspace(1/size, 1, size) # = F_y(Y)
     zeta = np.empty(size)
@@ -86,12 +107,15 @@ def compute_zeta(u_hat, inv_density, size):
 @njit
 def compute_phi(u_hat, inv_density, size):
     """
-    function to compute phi,
-    similar to P in Athey and Imbens (2006).
+    compute_phi :
+        function to compute phi,
+        similar to P in Athey and Imbens (2006).
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param inv_density (np.array): output of any of the inv_density functions
     @param size (int): size of the support
+    
+    @return phi (np.array)
     """
     support = np.linspace(1/size, 1, size) # = F_z(Z)
     phi = np.empty(size)
@@ -104,10 +128,13 @@ def compute_phi(u_hat, inv_density, size):
 @njit
 def compute_theta(u_hat, y):
     """
-    returns theta_hat and counterfactual outcome
+    compute_theta :
+        returns theta_hat and counterfactual outcome
     
     @param u_hat (np.array): output of counterfactual_ranks function
     @param y (np.array): outcome
+    
+    @return counterfactual_y, theta_hat (np.array)
     """
     counterfactual_y = np.quantile(y, u_hat)
     theta_hat = np.mean(counterfactual_y)
@@ -115,13 +142,15 @@ def compute_theta(u_hat, y):
 
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
     """
-    counterfactual ranks:
+    counterfactual_ranks:
         compute \widehat U the value of the CDF at each element of points_to_predict,
         using the empirical CDF defined by 'points_for_distribution'.
     
     @param points_to_predict (np.array): points for wich to get the rank in the distribution
     @param points_for_distribution (np.array): points for which to compute the CDF
     @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+    
+    @return u_hat (np.array)
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=points_to_predict, data=points_for_distribution)
@@ -129,7 +158,7 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
         ecdf = ECDF(points_for_distribution)
         u_hat = ecdf(points_to_predict)
     else:
-        raise ValueError("method argument for counterfactual ranks needs to be either 'smoothed' or 'standard'")
+        raise ValueError("'method' argument for counterfactual ranks needs to be either 'smoothed' or 'standard'.")
     return u_hat
 
 # ------------------------------------------------------------------------------------
@@ -146,6 +175,8 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     @param z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
     @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     @param se_method (str): can be "kernel", "lewbel-schennach" or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
+    
+    @return estimator and standard errors (np.array)
     """
     u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
         
@@ -164,7 +195,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     elif se_method == "xavier":
         inv_density = inv_density_Xavier(u_hat=u_hat, y=y)
     else:
-        raise ValueError("se_method arg should be 'kernel', 'lewbel-schennach' or 'xavier'.")
+        raise ValueError("'se_method' argument should be 'kernel', 'lewbel-schennach' or 'xavier'.")
         
     """
     compute_zeta:
@@ -216,7 +247,7 @@ def estimator_known_ranks(y, u):
         compute vector zeta_i as in out paper,
         similar to Q in Athey and Imbens (2006).
     """
-    zeta = compute_zeta(u_hat=u_hat, inv_density=inv_density, size=len(y))
+    zeta = compute_zeta(u_hat=u, inv_density=inv_density, size=len(y))
     
     """
     compute_epsilon:

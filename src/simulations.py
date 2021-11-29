@@ -9,7 +9,6 @@ Created on Wed Nov 11 12:07:14 2020
 
 @author: jeremylhour
 """
-import sys
 import numpy as np
 from numba import njit
 import pandas as pd
