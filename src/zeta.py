@@ -8,15 +8,15 @@ Created on Mon Nov 29 14:20:10 2021
 @author: jeremylhour
 """
 import numpy as np
-import pandas as pd
 import sys
 import yaml
 import time
+import pickle
 
 from scipy.stats import expon, pareto
 
-from simulations import generate_data
-from mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks
+from src.simulations import generate_data
+from src.mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks
 
 
 def theoretical_zeta(y, lambda_x, alpha_y):
@@ -33,10 +33,10 @@ def theoretical_zeta(y, lambda_x, alpha_y):
     if lambda_x - 1/alpha_y > 1:
         raise ValueError("lambda_x and alpha_y args must be so that lambda_x - 1/alpha_y < 1 for intergal to converge.")
     
-    quantile_y = 1-(1+y)**(-alpha_y) # quantile of Y
+    quantile_y = 1-(1+y)**(-alpha_y) # quantile of Y, F_y(Y)
     beta_const = lambda_x - 1/alpha_y - 2
     
-    zeta = -(lambda_x/alpha_y)/(beta_const+1) * ((1-quantile_y)**(beta_const+1) - 1/(beta_const+2))
+    zeta = -lambda_x * ((1-quantile_y)**(beta_const+1) + 1/(beta_const+2)) / (alpha_y*(beta_const+1))
     return zeta
 
 
@@ -113,20 +113,28 @@ if __name__ == '__main__':
             
             # COLLECTING RESULTS
             results[b] = [
-                (zeta-zeta_hat).mean(),
-                (zeta**2-zeta_hat**2).mean(),
+                np.mean(zeta_hat)-np.mean(zeta),
+                np.mean(zeta_hat**2)-np.mean(zeta**2),
                 (np.abs(zeta-zeta_hat)).max()
                 ]
         
         print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
     
         ########## POST-PROCESSS ##########
-        results = pd.DataFrame(results)
+        dico_results = {
+            'sample size': sample_size,
+            'lambda_x': lambda_x,
+            'alpha_y': alpha_y,
+            'mean of errors': results[:,0].mean(),
+            'mean of errors squared': results[:,1].mean(),
+            'max of absolute errors': results[:,2].mean()
+            }
         
-        y_hat = pd.DataFrame({
-            'mean of errors': results[0],
-            'mean of errors squared': results[1],
-            'max of absolute errors': results[2]
-            })
+        big_results[sample_size] = dico_results
         
-        print(y_hat.mean(axis=0))
+    print('='*80)
+    print('SAVING RESULT OBJECT')
+    print('='*80)
+    
+    pickle_file = 'output_zeta/raw/simulations_B='+str(B)+'_lambda_x='+str(lambda_x)+'_lambda_z='+str(lambda_z)+'_alpha_y='+str(alpha_y)+'.p'
+    pickle.dump(big_results, open(pickle_file,'wb'))
