@@ -15,8 +15,8 @@ import pickle
 
 from scipy.stats import expon, pareto
 
-from src.simulations import generate_data
-from src.mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks
+from simulations import generate_data
+from mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks
 
 
 def theoretical_zeta(y, lambda_x, alpha_y):
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     for sample_size in sample_size_set:
         print('Running {} simulations with sample size {}...'.format(B, sample_size))
         with open(outfile+'.txt', "a") as f:
-            f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
+            f.write('Running {} simulations with sample size {}...\n'.format(B, sample_size))
     
         np.random.seed(999)
         results = np.zeros(shape=(B, nb_metrics))
@@ -130,6 +130,9 @@ if __name__ == '__main__':
             'max of absolute errors': results[:,2].mean()
             }
         
+        with open(outfile+'.txt', "a") as f:
+            for key in dico_results:
+                f.write(f"{key} : {round(dico_results[key], 3)}\n")
         big_results[sample_size] = dico_results
         
     print('='*80)
