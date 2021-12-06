@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Functions to studi the behavior of zeta (eta in the paper)
+Functions to study the behavior of zeta (eta in the paper)
 
 Created on Mon Nov 29 14:20:10 2021
 
@@ -15,8 +15,10 @@ import pickle
 
 from scipy.stats import expon, pareto
 
+sys.path.append("src/")
 from simulations import generate_data
-from mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks
+from mainFunctions import compute_zeta, inv_density_Xavier, counterfactual_ranks, inv_density_LS
+from kernelDensityEstimator import kernel_density_estimator
 
 
 def theoretical_zeta(y, lambda_x, alpha_y):
@@ -81,7 +83,7 @@ if __name__ == '__main__':
     print('RUNNING SIMULATIONS')
     print('='*80)
     
-    nb_metrics = 3
+    nb_metrics = 9
     big_results = {}
     
     for sample_size in sample_size_set:
@@ -106,34 +108,56 @@ if __name__ == '__main__':
             # COMPUTE THE TRUE ZETA
             zeta = theoretical_zeta(y=np.sort(y), lambda_x=lambda_x, alpha_y=alpha_y)
             
-            # COMPUTE THE ESTIMATED ZETA
+            # 1. COMPUTE THE ESTIMATED ZETA -- XAVIER METHOD
             u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z)
             inv_density = inv_density_Xavier(u_hat=u_hat, y=y, spacing_2=True)
             zeta_hat = compute_zeta(u_hat, inv_density, size=sample_size)
+            
+            # 2. COMPUTE THE ESTIMATED ZETA -- KERNEL METHOD
+            inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
+            zeta_hat_kernel = compute_zeta(u_hat, inv_density, size=sample_size)
+            
+            # 3. COMPUTE THE ESTIMATED ZETA -- LEWBEL-SCHENNACH METHOD
+            u_hat, inv_density = inv_density_LS(u_hat=u_hat, y=y)
+            zeta_hat_ls = compute_zeta(u_hat, inv_density, size=sample_size)
             
             # COLLECTING RESULTS
             results[b] = [
                 np.mean(zeta_hat)-np.mean(zeta),
                 np.mean(zeta_hat**2)-np.mean(zeta**2),
-                (np.abs(zeta-zeta_hat)).max()
+                (np.abs(zeta_hat-zeta)).max(),
+                np.mean(zeta_hat_kernel)-np.mean(zeta),
+                np.mean(zeta_hat_kernel**2)-np.mean(zeta**2),
+                (np.abs(zeta_hat_kernel-zeta)).max(),
+                np.mean(zeta_hat_ls)-np.mean(zeta),
+                np.mean(zeta_hat_ls**2)-np.mean(zeta**2),
+                -99
                 ]
         
         print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
     
         ########## POST-PROCESSS ##########
-        dico_results = {
-            'sample size': sample_size,
-            'lambda_x': lambda_x,
-            'alpha_y': alpha_y,
-            'mean of errors': results[:,0].mean(),
-            'mean of errors squared': results[:,1].mean(),
-            'max of absolute errors': results[:,2].mean()
-            }
+        dico_results = {}
+        i = 0
+        for estimator in ['xavier', 'kernel', 'ls']:
+            dico_results[estimator] = {
+                'sample size': sample_size,
+                'lambda_x': lambda_x,
+                'alpha_y': alpha_y,
+                'mean of errors': results[:,3*i].mean(),
+                'mean of errors squared': results[:,3*i+1].mean(),
+                'max of absolute errors': results[:,3*i+2].mean()
+                }
+            i += 1
         
-        with open(outfile+'.txt', "a") as f:
-            for key in dico_results:
-                f.write(f"{key} : {round(dico_results[key], 3)}\n")
-        big_results[sample_size] = dico_results
+            with open(outfile+'.txt', "a") as f:
+                f.write("="*40+"\n")
+                f.write(estimator+'\n')
+                f.write("="*40+"\n")
+                for key in dico_results[estimator]:
+                    f.write(f"{key} : {round(dico_results[estimator][key], 3)}\n")
+                f.writre("\n")
+            big_results[sample_size] = dico_results
         
     print('='*80)
     print('SAVING RESULT OBJECT')

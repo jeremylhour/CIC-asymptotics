@@ -57,7 +57,7 @@ if [ "$ZETA" = true ] ; then
     echo RUNNING SIMULATIONS
     mkdir output_zeta/
     mkdir output_zeta/raw/
-    parallel --j 5 -a job_list.txt python3 zeta_experiment/simulations.py
+    parallel --j 5 -a job_list.txt python3 zeta_experiment/zeta_simulations.py
     
     echo CREATING RESULT TABLE
     python3 zeta_experiment/zeta_generate_latex.py
