@@ -156,7 +156,7 @@ if __name__ == '__main__':
                 f.write("="*40+"\n")
                 for key in dico_results[estimator]:
                     f.write(f"{key} : {round(dico_results[estimator][key], 3)}\n")
-                f.writre("\n")
+                f.write("\n")
             big_results[sample_size] = dico_results
         
     print('='*80)
