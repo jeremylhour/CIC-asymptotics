@@ -142,7 +142,7 @@ def compute_theta(u_hat, y):
 
 def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
     """
-    counterfactual_ranks:
+    counterfactual_ranks :
         compute \widehat U the value of the CDF at each element of points_to_predict,
         using the empirical CDF defined by 'points_for_distribution'.
     
@@ -164,9 +164,9 @@ def counterfactual_ranks(points_to_predict, points_for_distribution, method="smo
 # ------------------------------------------------------------------------------------
 # UNKNOWN RANKS
 # ------------------------------------------------------------------------------------
-def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
+def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel", bootstrap_quantile=None):
     """
-    estimator_unknown_ranks:
+    estimator_unknown_ranks :
         computes the estimator (1), i.e. average of quantiles of the outcome for each estimated rank,
         and corresponding standard error. "lewbel-schennach" implement estimation of s.e. based on Lewbel and Schennach's paper
         
@@ -174,8 +174,9 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     @param x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
     @param z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
     @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
-    @param se_method (str): can be "kernel", "lewbel-schennach" or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
-    
+    @param se_method (str): can be "kernel", "lewbel-schennach", or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
+    @param bootstrap_quantile (list): Bootstrap quantiles to compute, if None, skip this
+        
     @return estimator and standard errors (np.array)
     """
     u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
@@ -186,8 +187,15 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
     counterfactual_y, theta_hat = compute_theta(u_hat=u_hat, y=y)
     
     """
-    Computes inv_density depending on the method of choice.
+    Compute quantiles and stop, if needed.
     """
+    if bootstrap_quantile:
+        theta_bootstrap = bootstrap_sample(y, x, z, method=method)
+        return theta_hat, np.quantile(theta_bootstrap, q=bootstrap_quantile)
+    
+    """
+    Compute inv_density depending on the method of choice.
+    """ 
     if se_method == "kernel":
         inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
     elif se_method == "lewbel-schennach":
@@ -229,7 +237,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel"):
 # ------------------------------------------------------------------------------------
 def estimator_known_ranks(y, u):
     """
-    estimator_known_ranks:
+    estimator_known_ranks :
         computes the estimator (1), i.e. average of quantiles of the outcome for each rank
     
     WARNING : 
@@ -262,6 +270,54 @@ def estimator_known_ranks(y, u):
     
     return theta_hat, se/np.sqrt(len(y))
 
+# ------------------------------------------------------------------------------------
+# BOOTSTRAP PROCEDURE
+# ------------------------------------------------------------------------------------
+def bootstrap_sample(y, x, z, B=999, method="smoothed"):
+    """
+    bootstrap_sample :
+        computes the bootstrapped sample
+        
+    @param y (np.array): the outcome -- corresponds to outcome of untreated group at date 1.
+    @param x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
+    @param z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
+    @param B (int): number of bootstrap samples
+    @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+        
+    @return  (np.array)
+    """
+    theta_bootstrap = np.empty(shape=(B,))
+    
+    if method == "smoothed":
+        for b in range(B):
+            u_hat = counterfactual_ranks(
+                points_to_predict=np.random.choice(x, size=len(x), replace=True),
+                points_for_distribution=np.unique(np.random.choice(z, size=len(z), replace=True)),
+                method="smoothed"
+                )
+            _, theta_hat = compute_theta(
+                u_hat=u_hat,
+                y=np.random.choice(y, size=len(y), replace=True)
+                )
+            theta_bootstrap[b] = theta_hat
+    
+    elif method == "standard":
+        for b in range(B):
+            u_hat = counterfactual_ranks(
+                points_to_predict=np.random.choice(x, size=len(x), replace=True),
+                points_for_distribution=np.unique(np.random.choice(z, size=len(z), replace=True)),
+                method="standard"
+                )
+            _, theta_hat = compute_theta(
+                u_hat=u_hat,
+                y=np.random.choice(y, size=len(y), replace=True)
+                )
+            theta_bootstrap[b] = theta_hat
+            
+    else:
+        raise ValueError("'method' argument for counterfactual ranks needs to be either 'smoothed' or 'standard'.")
+            
+    return theta_bootstrap
 
 if __name__ == '__main__':
     pass

@@ -115,7 +115,7 @@ def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
 # ------------------------------------------------------------------------------------
 # PERFORMANCE REPORT
 # ------------------------------------------------------------------------------------
-def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=None):
+def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=None, bootstrap_quantiles=None):
     """
     performance_report:
         creates the report for simulations,
@@ -125,6 +125,9 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
     @param theta0 (float): scalar, true value of theta
     @param n_obs (int): sample size used during simulations
     @param histograms (bool): whether to draw the histograms
+    @param sigma (pd.DataFrame): B x K np.array of B simulations for K standard errors
+    @param file (str): where to save the report
+    @param bootstrap_quantiles (np.array): lower bound and upper bound of confidence interval computed by bootstrap
     """
     if sigma is None:
         sigma = np.ones(y_hat.shape)
@@ -143,20 +146,25 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
     report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0)
     report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0)
     report['CI size'] = 2*norm.ppf(0.975)*sigma.mean(axis=0)
+    if bootstrap_quantiles is not None:
+        report['Bootstrap cov. rate'] = ((bootstrap_quantiles[:,0] < theta0) & (bootstrap_quantiles[:,1] > theta0)).mean()
 
-    print('Theta_0: {:.2f}'.format(theta0))
-    print("Number of simulations: {} \n".format(report.get('n_simu')))
-    print("Sample size: {} \n".format(n_obs))
+    print('Theta_0 : {:.2f}'.format(theta0))
+    print("Number of simulations : {} \n".format(report.get('n_simu')))
+    print("Sample size : {} \n".format(n_obs))
+    if bootstrap_quantiles is not None:
+        print("Bootstrap coverage rate : {:.2f} \n".format(report.get('Bootstrap cov. rate')))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         print(metric+': ')
         for model in y_centered.columns:
-            print('- {}: {:.4f}'.format(model, report[metric][model]))
+            print('- {} : {:.4f}'.format(model, report[metric][model]))
         print('\n')
 
     ##### WRITING TO FILE #####
     with open(file+'.txt', "a") as f:
         f.write('\n')
         f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
+        f.write("Bootstrap coverage rate : {:.2f} \n".format(report.get('Bootstrap cov. rate')))
         for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
             f.write(metric+': \n')
             for model in y_centered.columns:

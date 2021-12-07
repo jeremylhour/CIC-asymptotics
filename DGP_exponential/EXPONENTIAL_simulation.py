@@ -20,7 +20,6 @@ Created on Mon Nov  9 12:07:05 2020
 import sys
 import numpy as np
 import pandas as pd
-import random
 import time
 import yaml
 import math
@@ -42,11 +41,11 @@ if __name__ == '__main__':
     with open(CONFIG_FILE, 'r') as stream:
         config = yaml.safe_load(stream)
         
-    B = config.get('nb_simu')
-    lambda_x = config.get('lambda_x')
-    lambda_z = config.get('lambda_z')
-    alpha_y = config.get('alpha_y')
-    sample_size_set = config.get('sample_size')
+    B = config.get('nb_simu', 100)
+    lambda_x = config.get('lambda_x', .75)
+    lambda_z = config.get('lambda_z', 1)
+    alpha_y = config.get('alpha_y', 20)
+    sample_size_set = config.get('sample_size', [100, 500])
     
     print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
           f'Parameter values give b_2={round(1-lambda_x/lambda_z, 2)}',
@@ -82,8 +81,9 @@ if __name__ == '__main__':
         with open(outfile+'.txt', "a") as f:
             f.write('Running {} simulations with sample size {}...'.format(B, sample_size))
     
-        random.seed(999)
-        results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
+        np.random.seed(999)
+        results, sigma = np.empty(shape=(B, nb_estimators)), np.empty(shape=(B, nb_estimators))
+        bootstrap_quantiles = np.empty(shape=(B, 2))
     
         start_time = time.time()
         for b in range(B):
@@ -103,11 +103,15 @@ if __name__ == '__main__':
             theta_smooth, sigma_smooth = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel")
             theta_ls, sigma_ls = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="lewbel-schennach")
             theta_x, sigma_x = estimator_unknown_ranks(y, x, z, method="smoothed", se_method="xavier")
-    
+            
+            # Confidence interval by bootstrap
+            _, empirical_quantile = estimator_unknown_ranks(y, x, z, method="smoothed", bootstrap_quantile = [.025, .975])
+            
             # Collecting results
             results[b,] = [theta_standard, theta_standard_x, theta_smooth, theta_ls, theta_x]
             sigma[b,] = [sigma_standard, sigma_standard_x, sigma_smooth, sigma_ls, sigma_x]
-        
+            bootstrap_quantiles[b,] = empirical_quantile
+            
             # Checking division error
             if math.isinf(sigma_smooth) or np.isnan(sigma_ls):
                 print(' -- error for this iteration')
@@ -136,7 +140,7 @@ if __name__ == '__main__':
                                  'smooth_ls': sigma[3],
                                  'smooth_xavier': sigma[4]})
         
-        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile)
+        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, bootstrap_quantiles=bootstrap_quantiles, histograms=False, sigma=sigma_df, file=outfile)
         
     
     print('='*80)
