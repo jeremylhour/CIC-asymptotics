@@ -139,4 +139,4 @@ input_configs_EXPONENTIAL/*
 input_configs_GAUSSIAN/*
 job_list.txt
 archived_results/*
-
+output_zeta/*
