@@ -43,14 +43,28 @@ def smoothed_ecdf(new_points, data):
     
     ### Compute extreme values outside the support (cf. e-mail Xavier 09/11),
     ### by extending the affine smoothing to the origin or to 1.
-    # Lower bound
-    b_1 = 1/((n_points+1)*(sorted_x[1]-sorted_x[0]))
-    a_1 = 1/(n_points+1) - b_1*sorted_x[0]
+    unique_sorted_x = np.unique(sorted_x)
+    
+    ### LOWER BOUND ###
+
+    # a. accounting for duplicates
+    y_0 = np.sum(data == unique_sorted_x[0])
+    y_1 = np.sum(data <= unique_sorted_x[1])
+    
+    # b. computing the line equation
+    b_1 = (y_1-y_0)/((n_points+1)*(unique_sorted_x[1]-unique_sorted_x[0]))
+    a_1 = y_0/(n_points+1) - b_1*unique_sorted_x[0]
     lb = -a_1/b_1
     
-    # Upper bound
-    b_n = 1/((n_points+1)*(sorted_x[-1]-sorted_x[-2]))
-    a_n = (n_points-1)/(n_points+1) - b_n*sorted_x[-2]
+    ### UPPER BOUND ###
+    
+    # a. accounting for duplicates
+    y_last = np.sum(data <= unique_sorted_x[-1])
+    y_second_to_last = np.sum(data <= unique_sorted_x[-2])
+    
+    # b. computing the line equation
+    b_n = (y_last-y_second_to_last)/((n_points+1)*(unique_sorted_x[-1]-unique_sorted_x[-2]))
+    a_n = y_last/(n_points+1) - b_n*unique_sorted_x[-1]
     ub = (1-a_n)/b_n
     
     # new array with upper and lower bounds
