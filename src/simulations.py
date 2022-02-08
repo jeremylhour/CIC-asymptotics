@@ -140,35 +140,33 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
     report['theta0'] = theta0
     report['n_simu'] = len(y_hat)
     report['n_obs']  = n_obs
-    report['bias']   = y_centered.mean(axis=0)
-    report['MAE']    = abs(y_centered).mean(axis=0)
-    report['RMSE']   = y_centered.std(axis=0)
-    report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0)
-    report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0)
-    report['CI size'] = 2*norm.ppf(0.975)*sigma.mean(axis=0)
+    report['bias']   = y_centered.mean(axis=0).to_dict()
+    report['MAE']    = abs(y_centered).mean(axis=0).to_dict()
+    report['RMSE']   = y_centered.std(axis=0).to_dict()
+    report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0).to_dict()
+    report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0).to_dict()
+    report['CI size'] = (2*norm.ppf(0.975)*sigma.mean(axis=0)).to_dict()
     if bootstrap_quantiles is not None:
-        report['Bootstrap cov. rate'] = ((bootstrap_quantiles[:,0] < theta0) & (bootstrap_quantiles[:,1] > theta0)).mean()
+        report['Coverage rate']['bootstrap'] = ((bootstrap_quantiles[:,0] < theta0) & (bootstrap_quantiles[:,1] > theta0)).mean()
+        report['CI size']['bootstrap'] = (bootstrap_quantiles[:,1] - bootstrap_quantiles[:,0]).mean()
 
     print('Theta_0 : {:.2f}'.format(theta0))
     print("Number of simulations : {} \n".format(report.get('n_simu')))
     print("Sample size : {} \n".format(n_obs))
-    if bootstrap_quantiles is not None:
-        print("Bootstrap coverage rate : {:.2f} \n".format(report.get('Bootstrap cov. rate')))
     for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
         print(metric+': ')
-        for model in y_centered.columns:
-            print('- {} : {:.4f}'.format(model, report[metric][model]))
+        for model in report.get(metric):
+            print('- {} : {:.4f}'.format(model, report.get(metric).get(model, np.nan)))
         print('\n')
-
+    
     ##### WRITING TO FILE #####
     with open(file+'.txt', "a") as f:
         f.write('\n')
         f.write('Theta_0: {:.2f} \n'.format(report['theta0']))
-        f.write("Bootstrap coverage rate : {:.2f} \n".format(report.get('Bootstrap cov. rate')))
         for metric in ['bias', 'MAE', 'RMSE', 'Coverage rate', 'CI size', 'Quantile .95']:
             f.write(metric+': \n')
-            for model in y_centered.columns:
-                f.write('- {}: {:.4f} \n'.format(model, report[metric][model]))
+            for model in report.get(metric):
+                f.write('- {}: {:.4f} \n'.format(model, report.get(metric).get(model, np.nan)))
             f.write('\n')
 
     ##### SAVING HISTOGRAM #####

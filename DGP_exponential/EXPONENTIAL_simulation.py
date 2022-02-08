@@ -47,14 +47,19 @@ if __name__ == '__main__':
     alpha_y = config.get('alpha_y', 20)
     sample_size_set = config.get('sample_size', [100, 500])
     
-    print(f'lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}',
-          f'Parameter values give b_2={round(1-lambda_x/lambda_z, 2)}',
-          f'Parameter values give d_2={round(1/alpha_y, 2)}',
-          f'So b_2+d_2={round(1-lambda_x/lambda_z+1/alpha_y, 2)}',
-          '--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply',
-          '--- and below 1 for theta_0 to be finite.',
-          sep = '\n'
-          )
+    print(
+        'Parameters :',
+        f'    - lambda_x={lambda_x}',
+        f'    - lambda_z={lambda_z}',
+        f'    - alpha_y={alpha_y}\n',
+        'Implied deep parameters :',
+        f'    - b_2={round(1-lambda_x/lambda_z, 2)}',
+        f'    - d_2={round(1/alpha_y, 2)}',
+        f'    - b_2+d_2={round(1-lambda_x/lambda_z+1/alpha_y, 2)}\n',
+        'Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply',
+        'and below 1 for theta_0 to be finite.',
+        sep = '\n'
+        )
     
     
     ########## SAVING TO FILE ###########
@@ -91,10 +96,12 @@ if __name__ == '__main__':
             sys.stdout.flush()
             
             # Simulate data
-            y, z, x =  generate_data(distrib_y = pareto(b=alpha_y, loc=-1),
-                                     distrib_z = expon(scale=1/lambda_z),
-                                     distrib_x = expon(scale=1/lambda_x),
-                                     size = sample_size)
+            y, z, x =  generate_data(
+                distrib_y = pareto(b=alpha_y, loc=-1),
+                distrib_z = expon(scale=1/lambda_z),
+                distrib_x = expon(scale=1/lambda_x),
+                size = sample_size
+                )
             
             # Estimator and standard error
             theta_standard, sigma_standard = estimator_unknown_ranks(y, x, z, method="standard")
@@ -140,7 +147,15 @@ if __name__ == '__main__':
                                  'smooth_ls': sigma[3],
                                  'smooth_xavier': sigma[4]})
         
-        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, bootstrap_quantiles=bootstrap_quantiles, histograms=False, sigma=sigma_df, file=outfile)
+        big_results[sample_size] = performance_report(
+            y_hat,
+            theta0,
+            n_obs=sample_size,
+            bootstrap_quantiles=bootstrap_quantiles,
+            histograms=False,
+            sigma=sigma_df,
+            file=outfile
+            )
         
     
     print('='*80)

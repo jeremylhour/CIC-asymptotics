@@ -7,8 +7,10 @@ Created on Thu Nov 19 09:56:39 2020
 
 @author: jeremylhour
 """
+import numpy as np
 import yaml
 import pickle
+
 
 if __name__ == '__main__':
     ########## LOAD MAIN CONFIG ##########
@@ -28,7 +30,7 @@ if __name__ == '__main__':
     print("="*80)
     
     ########## PARAMETERS ##########
-    models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier']
+    models = ['standard_kernel','standard_xavier','smooth_kernel', 'smooth_ls', 'smooth_xavier', 'bootstrap']
     metrics_set = ['bias', 'RMSE', 'Coverage rate', 'CI size']
     
     color_dico = dict({.2 : 'LightCyan',
@@ -63,7 +65,7 @@ if __name__ == '__main__':
                             sample_line += r' & \multicolumn{'+str(len(metrics_set))+'}{c}{'+'n='+str(sample_size)+'}'
                             header += ('c'*len(metrics_set))
                             for metric in metrics_set:
-                                string += ' & '+str(round(result.get(sample_size).get(metric).get(model), digits))
+                                string += ' & '+str(round(result.get(sample_size).get(metric).get(model, np.nan), digits))
                                 item += ' & '+metric
                         string += '\\\\'
                         item += '\\\\'
@@ -93,20 +95,7 @@ if __name__ == '__main__':
                         if colours:
                             f.write(r'\rowcolor{'+color_dico.get(i)+'} ')
                         f.write(string)
-                        f.write('\n')
-                        
-                    # Adding bootstrap
-                    string = "Bootstrap"
-                    for sample_size in result:
-                        for metric in metrics_set:
-                            if metric == 'Coverage rate':
-                                string += ' & '+str(round(result.get(sample_size).get('Bootstrap cov. rate'), digits))
-                            else:
-                                string += ' & '
-                    string += '\\\\'
-                    f.write(string)
-                    f.write('\n')
-                            
+                        f.write('\n')       
 
         f.write(r'\bottomrule')
         f.write('\n')
