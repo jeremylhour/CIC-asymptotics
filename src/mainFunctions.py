@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Main high-level functions for computing the estimator.
 The main function is estimator_unknown_ranks.
-
-Compile with numba for improved speed of execution.
 
 Created on Wed Nov 11 12:02:50 2020
 
@@ -32,10 +28,12 @@ def inv_density_LS(u_hat, y):
         "A Simple Ordered Data Estimator For Inverse Density Weighted Functions,"
         Arthur Lewbel and Susanne Schennach, Journal of Econometrics, 2007, 186, 189-211.
     
-    @param u_hat (np.array): output of counterfactual_ranks function
-    @param y (np.array): outcome
-    
-    @return u_hat, inv_density (np.array)
+    Args:
+        u_hat (np.array): output of counterfactual_ranks function.
+        y (np.array): outcome.
+
+    Return:
+        u_hat, inv_density (np.array)
     """
     u_hat = np.unique(np.sort(u_hat)) # order and remove duplicates
     F_inverse = np.quantile(y, u_hat)
@@ -44,17 +42,19 @@ def inv_density_LS(u_hat, y):
     return u_hat, inv_density
 
 @njit
-def inv_density_Xavier(u_hat, y, spacing_2=True):
+def inv_density_Xavier(u_hat, y, spacing_2: bool = True):
     """
     inv_density_Xavier :
         returns inv_density using the Xavier method
     
-    @param u_hat (np.array): output of counterfactual_ranks function
-    @param y (np.array): outcome
-    @param spacing_2 (bool): If True, two spacings between data points as in the points used for U_i will be
-        U_i+ and U_i-. If not, it's U_i+ and U_i
+    Args:
+        u_hat (np.array): output of counterfactual_ranks function
+        y (np.array): outcome
+        spacing_2 (bool): If True, two spacings between data points as in the points used for U_i will be
+            U_i+ and U_i-. If not, it's U_i+ and U_i
     
-    @return inv_density (np.array)
+    Return:
+        inv_density (np.array)
     """
     u_hat = np.sort(u_hat)
     # find distinct values just above and just below
@@ -86,21 +86,22 @@ def inv_density_Xavier(u_hat, y, spacing_2=True):
 def compute_zeta(u_hat, inv_density, size):
     """
     compute_zeta :
-        function to compute zeta,
-        similar to Q in Athey and Imbens (2006).
+        function to compute zeta, similar to Q in Athey and Imbens (2006).
         In our paper, it might be called 'eta' instead.
     
-    @param u_hat (np.array): output of counterfactual_ranks function
-    @param inv_density (np.array): output of any of the inv_density functions
-    @param size (int): size of the support
+    Args:
+        u_hat (np.array): output of counterfactual_ranks function
+        inv_density (np.array): output of any of the inv_density functions
+        size (int): size of the support
     
-    @return zeta (np.array)
+    Return:
+        zeta (np.array)
     """
-    support = np.linspace(1/size, 1, size) # = F_y(Y)
+    support = np.linspace(1 / size, 1, size) # = F_y(Y)
     zeta = np.empty(size)
     for i in range(size):
         indicator = (support[i] <= u_hat)
-        inside_integral = -(indicator - u_hat)*inv_density
+        inside_integral = -(indicator - u_hat) * inv_density
         zeta[i] = np.mean(inside_integral)
     return zeta
 
@@ -108,20 +109,21 @@ def compute_zeta(u_hat, inv_density, size):
 def compute_phi(u_hat, inv_density, size):
     """
     compute_phi :
-        function to compute phi,
-        similar to P in Athey and Imbens (2006).
+        function to compute phi, similar to P in Athey and Imbens (2006).
     
-    @param u_hat (np.array): output of counterfactual_ranks function
-    @param inv_density (np.array): output of any of the inv_density functions
-    @param size (int): size of the support
+    Args:
+        u_hat (np.array): output of counterfactual_ranks function
+        inv_density (np.array): output of any of the inv_density functions
+        size (int): size of the support
     
-    @return phi (np.array)
+    Return:
+        phi (np.array)
     """
-    support = np.linspace(1/size, 1, size) # = F_z(Z)
+    support = np.linspace(1 / size, 1, size) # = F_z(Z)
     phi = np.empty(size)
     for i in range(size):
         indicator = (support[i] <= u_hat)
-        inside_integral = (indicator-u_hat)*inv_density
+        inside_integral = (indicator - u_hat) * inv_density
         phi[i] = np.mean(inside_integral)
     return phi
 
@@ -131,26 +133,30 @@ def compute_theta(u_hat, y):
     compute_theta :
         returns theta_hat and counterfactual outcome
     
-    @param u_hat (np.array): output of counterfactual_ranks function
-    @param y (np.array): outcome
+    Args:
+        u_hat (np.array): output of counterfactual_ranks function
+        y (np.array): outcome
     
-    @return counterfactual_y, theta_hat (np.array)
+    Return:
+        counterfactual_y, theta_hat (np.array)
     """
     counterfactual_y = np.quantile(y, u_hat)
     theta_hat = np.mean(counterfactual_y)
     return counterfactual_y, theta_hat
 
-def counterfactual_ranks(points_to_predict, points_for_distribution, method="smoothed"):
+def counterfactual_ranks(points_to_predict, points_for_distribution, method: str = "smoothed"):
     """
     counterfactual_ranks :
         compute \widehat U the value of the CDF at each element of points_to_predict,
         using the empirical CDF defined by 'points_for_distribution'.
     
-    @param points_to_predict (np.array): points for wich to get the rank in the distribution
-    @param points_for_distribution (np.array): points for which to compute the CDF
-    @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+    Args:
+        points_to_predict (np.array): points for wich to get the rank in the distribution
+        points_for_distribution (np.array): points for which to compute the CDF
+        method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
     
-    @return u_hat (np.array)
+    Return:
+        u_hat (np.array)
     """
     if method == "smoothed":
         u_hat = smoothed_ecdf(new_points=points_to_predict, data=points_for_distribution)
@@ -169,15 +175,17 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel", boot
     estimator_unknown_ranks :
         computes the estimator (1), i.e. average of quantiles of the outcome for each estimated rank,
         and corresponding standard error. "lewbel-schennach" implement estimation of s.e. based on Lewbel and Schennach's paper
-        
-    @param y (np.array): the outcome -- corresponds to outcome of untreated group at date 1.
-    @param x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
-    @param z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
-    @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
-    @param se_method (str): can be "kernel", "lewbel-schennach", or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
-    @param bootstrap_quantile (list): Bootstrap quantiles to compute, if None, skip this
-        
-    @return estimator and standard errors (np.array)
+    
+    Args:
+        y (np.array): the outcome -- corresponds to outcome of untreated group at date 1.
+        x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
+        z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
+        method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+        se_method (str): can be "kernel", "lewbel-schennach", or "xavier" depending on the type of method for computing 1/f(F^{-1}(u_hat)).
+        bootstrap_quantile (list): Bootstrap quantiles to compute, if None, skip this
+    
+    Return:
+        estimator and standard errors (np.array)
     """
     u_hat = counterfactual_ranks(points_to_predict=x, points_for_distribution=z, method=method)
         
@@ -197,7 +205,7 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel", boot
     Compute inv_density depending on the method of choice.
     """ 
     if se_method == "kernel":
-        inv_density = 1/kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
+        inv_density = 1 / kernel_density_estimator(x=np.quantile(y, u_hat), data=y)
     elif se_method == "lewbel-schennach":
         u_hat, inv_density = inv_density_LS(u_hat=u_hat, y=y)
     elif se_method == "xavier":
@@ -228,9 +236,9 @@ def estimator_unknown_ranks(y, x, z, method="smoothed", se_method="kernel", boot
     """
     compute standard error
     """
-    se = np.sqrt(np.mean(zeta**2) + np.mean(phi**2) + np.mean(epsilon**2))
+    se = np.sqrt(np.mean(zeta ** 2) + np.mean(phi ** 2) + np.mean(epsilon ** 2))
 
-    return theta_hat, se/np.sqrt(len(y))
+    return theta_hat, se / np.sqrt(len(y))
 
 # ------------------------------------------------------------------------------------
 # KNOWN RANKS
@@ -243,9 +251,10 @@ def estimator_known_ranks(y, u):
     WARNING : 
         This function is a particular case of the previous one,
         it can probably be included with the right options, but I haven't took the time to do it.
-        
-    @param y: np.array of the outcome -- corresponds to outcome of untreated group at date 1.
-    @param u: np.array of the ranks
+    
+    Args:
+        y: np.array of the outcome -- corresponds to outcome of untreated group at date 1.
+        u: np.array of the ranks
     """
     inv_density = 1/kernel_density_estimator(x=np.quantile(y, u), data=y) 
     counterfactual_y, theta_hat = compute_theta(u_hat=u, y=y)
@@ -277,14 +286,16 @@ def bootstrap_sample(y, x, z, B=999, method="smoothed"):
     """
     bootstrap_sample :
         computes the bootstrapped sample
-        
-    @param y (np.array): the outcome -- corresponds to outcome of untreated group at date 1.
-    @param x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
-    @param z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
-    @param B (int): number of bootstrap samples
-    @param method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
-        
-    @return  (np.array)
+    
+    Args:
+        y (np.array): the outcome -- corresponds to outcome of untreated group at date 1.
+        x (np.array): the points to project -- corresponds to outcome of treated group at date 0.
+        z (np.array): the points for distribution -- corresponds to outcome ot untreated group at date 1.
+        B (int): number of bootstrap samples
+        method (str): can be "smoothed" or "standard" dependant on the type of method for computation of the CDF
+    
+    Return:
+        (np.array)
     """
     theta_bootstrap = np.empty(shape=(B,))
     

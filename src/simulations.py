@@ -41,8 +41,7 @@ def true_theta(distrib_y, distrib_z, distrib_x, size=10000):
 
     U = np.random.uniform(size=size)
     U_tilde = Q_y(F_z(Q_x(U)))
-    theta = np.mean(U_tilde)
-    return theta
+    return np.mean(U_tilde)
 
 @njit
 def analytical_theta(alpha_y, lambda_z, lambda_x):
@@ -55,7 +54,7 @@ def analytical_theta(alpha_y, lambda_z, lambda_x):
     @param lambda_z (float): a positive number
     @param lambda_x (float): a positive number
     """
-    return 1/(alpha_y*lambda_x/lambda_z - 1)
+    return 1 / (alpha_y * lambda_x / lambda_z - 1)
 
 def generate_data(distrib_y, distrib_z, distrib_x, size=1000):
     """
@@ -92,8 +91,7 @@ def true_theta_observed_rank(distrib_y, distrib_u, size=10000):
 
     U = np.random.uniform(size=size)
     U_tilde = Q_y(Q_u(U))
-    theta = np.mean(U_tilde)
-    return theta
+    return np.mean(U_tilde)
 
 
 def generate_data_observed_rank(distrib_y, distrib_u, size=1000):
@@ -136,16 +134,18 @@ def performance_report(y_hat, theta0, n_obs, histograms=True, sigma=None, file=N
 
     y_centered = y_hat - theta0
     
-    report = {}
-    report['theta0'] = theta0
-    report['n_simu'] = len(y_hat)
-    report['n_obs']  = n_obs
-    report['bias']   = y_centered.mean(axis=0).to_dict()
-    report['MAE']    = abs(y_centered).mean(axis=0).to_dict()
-    report['RMSE']   = y_centered.std(axis=0).to_dict()
-    report['Coverage rate'] = (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0).to_dict()
-    report['Quantile .95'] = (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0).to_dict()
-    report['CI size'] = (2*norm.ppf(0.975)*sigma.mean(axis=0)).to_dict()
+    report = {
+        'theta0': theta0,
+        'n_simu': len(y_hat),
+        'n_obs': n_obs,
+        'bias': y_centered.mean(axis=0).to_dict(),
+        'MAE': abs(y_centered).mean(axis=0).to_dict(),
+        'RMSE': y_centered.std(axis=0).to_dict(),
+        'Coverage rate': (abs(y_centered/sigma) < norm.ppf(0.975)).mean(axis=0).to_dict(),
+        'Quantile .95': (np.sqrt(n_obs)*y_centered).quantile(q=.95, axis=0).to_dict(),
+        'CI size': (2*norm.ppf(0.975)*sigma.mean(axis=0)).to_dict()
+        }
+
     if bootstrap_quantiles is not None:
         report['Coverage rate']['bootstrap'] = ((bootstrap_quantiles[:,0] < theta0) & (bootstrap_quantiles[:,1] > theta0)).mean()
         report['CI size']['bootstrap'] = (bootstrap_quantiles[:,1] - bootstrap_quantiles[:,0]).mean()
@@ -189,6 +189,7 @@ def latex_table(results, file, models=['standard','smoothed', 'smoothed_lewbel-s
     """
     latex_table:
         outputs a latex table from a list of results
+        
     @param results: list of results based on the format results[sample_size][metric][model]
     @param file (str): name of the output file
     @param models (list of str): list of the models
