@@ -1,0 +1,90 @@
+
+Theta_0: 0.14 
+bias: 
+- Standard kernel: -0.0073 
+- Standard Xavier: -0.0073 
+- Smooth kernel: -0.0083 
+- Smooth LS: -0.0083 
+- Smooth Xavier: -0.0083 
+
+MAE: 
+- Standard kernel: 0.0128 
+- Standard Xavier: 0.0128 
+- Smooth kernel: 0.0134 
+- Smooth LS: 0.0134 
+- Smooth Xavier: 0.0134 
+
+RMSE: 
+- Standard kernel: 0.0135 
+- Standard Xavier: 0.0135 
+- Smooth kernel: 0.0137 
+- Smooth LS: 0.0137 
+- Smooth Xavier: 0.0137 
+
+Coverage rate: 
+- Smooth Kernel: 0.0000 
+- Smooth LS: 0.8000 
+- Smooth Xavier: 1.0000 
+- Smooth kernel: 0.0000 
+- Standard Xavier: 1.0000 
+- Standard kernel: 0.8000 
+
+CI size: 
+- Standard kernel: 0.0433 
+- Standard Xavier: 0.1069 
+- Smooth Kernel: 0.0574 
+- Smooth LS: 0.0441 
+- Smooth Xavier: 0.0910 
+
+Quantile .95: 
+- Standard kernel: 0.2344 
+- Standard Xavier: 0.2344 
+- Smooth kernel: 0.2170 
+- Smooth LS: 0.2170 
+- Smooth Xavier: 0.2170 
+
+
+Theta_0: 0.14 
+bias: 
+- Standard kernel: -0.0073 
+- Standard Xavier: -0.0073 
+- Smooth kernel: -0.0083 
+- Smooth LS: -0.0083 
+- Smooth Xavier: -0.0083 
+
+MAE: 
+- Standard kernel: 0.0128 
+- Standard Xavier: 0.0128 
+- Smooth kernel: 0.0134 
+- Smooth LS: 0.0134 
+- Smooth Xavier: 0.0134 
+
+RMSE: 
+- Standard kernel: 0.0135 
+- Standard Xavier: 0.0135 
+- Smooth kernel: 0.0137 
+- Smooth LS: 0.0137 
+- Smooth Xavier: 0.0137 
+
+Coverage rate: 
+- Smooth Kernel: 0.0000 
+- Smooth LS: 0.8000 
+- Smooth Xavier: 1.0000 
+- Smooth kernel: 0.0000 
+- Standard Xavier: 1.0000 
+- Standard kernel: 0.8000 
+
+CI size: 
+- Standard kernel: 0.0433 
+- Standard Xavier: 0.1069 
+- Smooth Kernel: 0.0574 
+- Smooth LS: 0.0441 
+- Smooth Xavier: 0.0910 
+
+Quantile .95: 
+- Standard kernel: 0.2344 
+- Standard Xavier: 0.2344 
+- Smooth kernel: 0.2170 
+- Smooth LS: 0.2170 
+- Smooth Xavier: 0.2170 
+

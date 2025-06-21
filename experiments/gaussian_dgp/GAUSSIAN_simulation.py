@@ -7,18 +7,19 @@ This DGP :
     - Y ~ N(0,1),
     - Z ~ N(0,1),
     - X ~ N(mu,v).
-    
+
 Implied "deep" parameters, if variance_x > variance_x :
     - b_1 = b_2 = 1-variance_z/variance_x,
     - d_1 = d_2 = 0.
 When variance_x < variance_x, there is no problem.
 
 In this DGP, theta_0 = mu, since F_Z = F_Y.
-    
+
 Created on Mon Nov  9 12:07:05 2020
 
 @author: jeremylhour
 """
+
 import sys
 import numpy as np
 import pandas as pd
@@ -28,37 +29,38 @@ import yaml
 import math
 import pickle
 
-sys.path.append("src/")
 
-from mainFunctions import estimator_unknown_ranks
-from simulations import generate_data, performance_report
+from cic_asymptotics import (
+    estimator_unknown_ranks,
+    generate_data,
+    get_performance_report,
+)
 
 from scipy.stats import norm
 
-if __name__ == '__main__':
-    print('='*80)
-    print('LOADING CONFIG')
-    print('='*80)
+if __name__ == "__main__":
+    print("=" * 80)
+    print("LOADING CONFIG")
+    print("=" * 80)
 
     config_file = sys.argv[1]
     with open(config_file, "r") as stream:
         config = yaml.safe_load(stream)
-    
+
     B = config.get("nb_simu")
     variance_x = config.get("variance_x")
     mu_x = config.get("mu_x")
-    
-    
-    print(f"mu_x={mu_x}",
-          f"variance_x={variance_x}",
-          f"Parameter values give b_1 = b_2 = {1 - 1/variance_x}",
-          "In this DGP, d_1 = d_2 = 0",
-          "--- Remember, b_i + d_i, i=1, 2 should be below .5 for Theorem 2 to apply",
-          "--- and below 1 for theta_0 to be finite.",
-          sep = '\n'
-          )
-    
-    
+
+    print(
+        f"mu_x={mu_x}",
+        f"variance_x={variance_x}",
+        f"Parameter values give b_1 = b_2 = {1 - 1 / variance_x}",
+        "In this DGP, d_1 = d_2 = 0",
+        "--- Remember, b_i + d_i, i=1, 2 should be below .5 for Theorem 2 to apply",
+        "--- and below 1 for theta_0 to be finite.",
+        sep="\n",
+    )
+
     ########## SAVING TO FILE ###########
     outfile = (
         "output/gaussian_simulations_B="
@@ -68,38 +70,42 @@ if __name__ == '__main__':
         + "_variance_x="
         + str(variance_x)
     )
-    
+
     with open(outfile + ".txt", "a") as f:
         f.write("\n")
         f.write("mu_x={:.2f} \n".format(mu_x))
         f.write("variance_x={:.2f} \n".format(variance_x))
-        f.write(f"Parameter values give b_1 = b_2 ={1 - 1/variance_x}")
+        f.write(f"Parameter values give b_1 = b_2 ={1 - 1 / variance_x}")
         f.write("In this DGP, d_1 = d_2 = 0")
         f.write("\n")
-    
-    
-    print('='*80)
-    print('RUNNING SIMULATIONS')
-    print('='*80)
-    
+
+    print("=" * 80)
+    print("RUNNING SIMULATIONS")
+    print("=" * 80)
+
     nb_estimators = 5
     sample_size_set = config["sample_size"]
     big_results = {}
-    
+
     for sample_size in sample_size_set:
         print("Running {} simulations with sample size {}...".format(B, sample_size))
         with open(outfile + ".txt", "a") as f:
-            f.write("Running {} simulations with sample size {}...".format(B, sample_size))
-    
+            f.write(
+                "Running {} simulations with sample size {}...".format(B, sample_size)
+            )
+
         random.seed(999)
-    
-        results, sigma = np.zeros(shape=(B, nb_estimators)), np.zeros(shape=(B, nb_estimators))
-    
+
+        results, sigma = (
+            np.zeros(shape=(B, nb_estimators)),
+            np.zeros(shape=(B, nb_estimators)),
+        )
+
         start_time = time.time()
         for b in range(B):
             sys.stdout.write("\r{0}".format(b))
             sys.stdout.flush()
-    
+
             y, z, x = generate_data(
                 distrib_y=norm(loc=0, scale=1),
                 distrib_z=norm(loc=0, scale=1),
@@ -113,7 +119,7 @@ if __name__ == '__main__':
             theta_standard_x, sigma_standard_x = estimator_unknown_ranks(
                 y, x, z, method="standard", se_method="xavier"
             )
-    
+
             theta_smooth, sigma_smooth = estimator_unknown_ranks(
                 y, x, z, method="smoothed", se_method="kernel"
             )
@@ -123,7 +129,7 @@ if __name__ == '__main__':
             theta_x, sigma_x = estimator_unknown_ranks(
                 y, x, z, method="smoothed", se_method="xavier"
             )
-    
+
             # Collecting results
             results[b,] = [
                 theta_standard,
@@ -132,24 +138,32 @@ if __name__ == '__main__':
                 theta_ls,
                 theta_x,
             ]
-            sigma[b,] = [sigma_standard, sigma_standard_x, sigma_smooth, sigma_ls, sigma_x]
-    
+            sigma[b,] = [
+                sigma_standard,
+                sigma_standard_x,
+                sigma_smooth,
+                sigma_ls,
+                sigma_x,
+            ]
+
             # Checking division error
             if math.isinf(sigma_smooth) or np.isnan(sigma_ls):
                 print(" -- error for this iteration")
                 results[b,] = [np.nan] * nb_estimators
                 sigma[b,] = [np.nan] * nb_estimators
-        print(f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---")
-    
+        print(
+            f"Temps d'exécution total : {(time.time() - start_time):.2f} secondes ---"
+        )
+
         ########## POST-PROCESSS ##########
         results = pd.DataFrame(results)
         results.dropna(axis=0, inplace=True)
-    
+
         sigma = pd.DataFrame(sigma)
         sigma.dropna(axis=0, inplace=True)
-    
+
         theta0 = mu_x
-    
+
         y_hat = pd.DataFrame(
             {
                 "standard_kernel": results[0],
@@ -159,7 +173,7 @@ if __name__ == '__main__':
                 "smooth_xavier": results[4],
             }
         )
-    
+
         sigma_df = pd.DataFrame(
             {
                 "standard_kernel": sigma[0],
@@ -169,14 +183,20 @@ if __name__ == '__main__':
                 "smooth_xavier": sigma[4],
             }
         )
-    
-        big_results[sample_size] = performance_report(y_hat, theta0, n_obs=sample_size, histograms=False, sigma=sigma_df, file=outfile)
-    
-    
-    print('='*80)
-    print('SAVING RESULT OBJECT')
-    print('='*80)
-    
+
+        big_results[sample_size] = get_performance_report(
+            y_hat,
+            theta0,
+            n_obs=sample_size,
+            histograms=False,
+            sigma=sigma_df,
+            file=outfile,
+        )
+
+    print("=" * 80)
+    print("SAVING RESULT OBJECT")
+    print("=" * 80)
+
     pickle_file = (
         "output/raw/gaussian_simulations_B="
         + str(B)
