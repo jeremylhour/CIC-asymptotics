@@ -1,0 +1,3 @@
+# cic-asymptotics
+
+Core code.

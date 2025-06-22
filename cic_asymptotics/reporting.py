@@ -56,6 +56,25 @@ def compute_metrics(
     return metrics
 
 
+def print_report(report):
+    """
+    print_report:
+        prints the report for simulations,
+        computes bias, MSE, MAE and coverage rate.
+
+    Args:
+        report (dict): dictionary containing the metrics
+    """
+    print("Theta_0 : {:.2f}".format(report.get("theta0")))
+    print("Number of simulations : {} \n".format(report.get("n_simu")))
+    print("Sample size : {} \n".format(report.get("n_obs")))
+    for metric in ["bias", "MAE", "RMSE", "Coverage rate", "CI size", "Quantile .95"]:
+        print(metric + ": ")
+        for model in report.get(metric):
+            print("- {} : {:.3f}".format(model, report.get(metric).get(model, np.nan)))
+        print("\n")
+
+
 def get_performance_report(
     y_hat,
     theta0: float,
@@ -64,6 +83,7 @@ def get_performance_report(
     bootstrap_quantiles=None,
     file: str = "default_output_file",
     histogram: bool = True,
+    verbose: bool = True,
 ):
     """
     performance_report:
@@ -87,14 +107,8 @@ def get_performance_report(
         bootstrap_quantiles=bootstrap_quantiles,
     )
 
-    print("Theta_0 : {:.2f}".format(theta0))
-    print("Number of simulations : {} \n".format(report.get("n_simu")))
-    print("Sample size : {} \n".format(n_obs))
-    for metric in ["bias", "MAE", "RMSE", "Coverage rate", "CI size", "Quantile .95"]:
-        print(metric + ": ")
-        for model in report.get(metric):
-            print("- {} : {:.4f}".format(model, report.get(metric).get(model, np.nan)))
-        print("\n")
+    if verbose:
+        print_report(report)
 
     with open(file + ".txt", "a") as f:
         f.write("\n")

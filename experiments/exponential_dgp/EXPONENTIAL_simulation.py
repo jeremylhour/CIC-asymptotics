@@ -26,7 +26,6 @@ import yaml
 import math
 import pickle
 
-sys.path.append("src/")
 
 from cic_asymptotics import (
     estimator_unknown_ranks,
