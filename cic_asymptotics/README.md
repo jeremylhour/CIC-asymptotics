@@ -4,6 +4,7 @@ This folder contains the core implementation files for the `cic_asymptotics` pac
 
 - `density_estimator.py`: all the functions related to density estimation and inverse density estimation,
 - `empirical_cdf.py`: empirical cumulative distribution function estimators,
+- `estimators.py`: the function to compute the main estimators from the paper,
 - `dgps.py`: data-generating processes available for simulations,
 - `simulation_tools.py`: helpers for running simulations,
 - `reporting.py`: tools to process simulation results,
