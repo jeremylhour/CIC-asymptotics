@@ -3,8 +3,8 @@
 # WHEN RUNNING simulations.py AS MAIN
 # ----------------------------------
 
-nb_simu: 5              # Nb. of simulations
-sample_size: [5000]    # Sample size, can be an array of multiple values
+nb_simu: 10              # Nb. of simulations
+sample_size: 1000    # Sample size, can be an array of multiple values
 lambda_x: .8               # Parameter of exponential distribution for X
 lambda_z: 1                # Parameter of exponential distribution for Z
 alpha_y: 10                 # Parameter of Pareto distribution for Y

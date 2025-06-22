@@ -13,7 +13,7 @@ from numba import njit
 from statsmodels.distributions.empirical_distribution import ECDF
 
 from .empirical_cdf import smoothed_empirical_cdf
-from .kernel_density_estimation import (
+from .density_estimation import (
     kernel_density_estimator,
     inv_density_ls,
     inv_density_xavier,

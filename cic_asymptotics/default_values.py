@@ -1,5 +1,3 @@
-from pathlib import Path
-
 DEFAULT_SAMPLE_SIZE = 1_000
 
 DEFAULT_ESTIMATORS = {
@@ -22,4 +20,4 @@ DEFAULT_CONFIG = {
 
 DEFAULT_SIMULATION_SIZE = 100
 
-OUTPATH = Path("output/")
+OUTPATH = "output/"
