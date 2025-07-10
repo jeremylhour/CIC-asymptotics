@@ -189,3 +189,35 @@ class GaussianDGP:
             size=self.n,
         )
         return y, z, x
+
+
+@dataclass
+class LimitCaseDGP:
+    """
+    LimitCaseDGP
+    """
+
+    n: int = DEFAULT_SAMPLE_SIZE
+    d1: float = 0.249
+    d2: float = 0.249
+    b1: float = 0.249
+    b2: float = 0.249
+
+    def __post_init__(self):
+        if (self.b1 + self.b2 >= 0.5) or (self.d1 + self.d2 >= 0.5):
+            raise ValueError(
+                "Both b1 + b2 and d1 + d2 should be below 0.5 for Theorem 2 to apply."
+            )
+
+        self.name = (
+            f"limit_case_dgp_d1={self.d1}_d2={self.d2}_b1={self.b1}_b2={self.b2}"
+        )
+
+    def y_quantile(self, x):
+        return -(x ** (-self.d1)) + (1 - x) ** (-self.d2)
+
+    def generate(self):
+        y = self.y_quantile(np.random.uniform(size=self.n))
+        z = np.random.normal(loc=0, scale=1, size=self.n)
+        x = norm(loc=0, scale=1).ppf(np.random.beta(self.b1, self.b2, size=self.n))
+        return y, z, x
