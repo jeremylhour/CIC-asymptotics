@@ -97,7 +97,7 @@ def counterfactual_ranks(x, points_for_distribution, method: str = "smoothed"):
     """
     counterfactual_ranks :
         compute \widehat U the value of the CDF at each element of points_to_predict,
-        using the empirical CDF defined by 'points_for_distribution'.
+        using the empirical CDF defined by 'points_for_distribution' (i.e. Z in the paper).
 
     Args:
         x (np.array): points for wich to get the rank in the distribution

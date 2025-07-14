@@ -5,12 +5,13 @@
 simulation_size: 10
 
 config:
-  dgp: exponential
+  dgp: limit-case
   n: 100
   params:
-    lambda_x: 0.8
-    lambda_z: 1.2
-    alpha_y: 10
+    d1: .2
+    d2: .2
+    b1: .2
+    b2: .2
 
 estimators:
   Standard kernel:

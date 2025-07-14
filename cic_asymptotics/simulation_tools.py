@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from .dgps import ExponentialDGP, GaussianDGP
+from .dgps import ExponentialDGP, GaussianDGP, LimitCaseDGP
 from .estimators import estimator_unknown_ranks
 
 np.random.seed(999)
@@ -46,6 +46,8 @@ def create_dgp_from_config(config):
         return ExponentialDGP(n=config["n"], **config["params"])
     elif config["dgp"] == "gaussian":
         return GaussianDGP(n=config["n"], **config["params"])
+    elif config["dgp"] == "limit-case":
+        return LimitCaseDGP(n=config["n"], **config["params"])
     else:
         raise ValueError("Unknown DGP type specified in the configuration.")
 

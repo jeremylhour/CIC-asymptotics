@@ -208,6 +208,10 @@ class LimitCaseDGP:
             raise ValueError(
                 "Both b1 + b2 and d1 + d2 should be below 0.5 for Theorem 2 to apply."
             )
+        if np.max([self.b1, self.b2]) + np.max([self.d1, self.d2]) >= 0.5:
+            raise ValueError(
+                "max(b1, b2) + max(d1, d2) should be below 0.5 for Theorem 2 to apply."
+            )
 
         self.name = (
             f"limit_case_dgp_d1={self.d1}_d2={self.d2}_b1={self.b1}_b2={self.b2}"
