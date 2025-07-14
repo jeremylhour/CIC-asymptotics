@@ -2,11 +2,11 @@
 # EXAMPLE CONFIGURATION FILE
 # ----------------------------------
 
-simulation_size: 10
+simulation_size: 100
 
 config:
   dgp: limit-case
-  n: 100
+  n: 1000
   params:
     d1: .2
     d2: .2

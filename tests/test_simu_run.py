@@ -15,24 +15,22 @@ from cic_asymptotics import (
 if __name__ == "__main__":
     print("THIS IS AN EXAMPLE USING EXPONENTIAL DGP")
 
-    B = 5
+    B = 100
     lambda_x = 0.8
     lambda_z = 1
     alpha_y = 10
+    PRINT = False
 
-    print(
-        f"lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}",
-        f"Parameter values give b_2={round(1 - lambda_x / lambda_z, 2)}",
-        f"Parameter values give d_2={round(1 / alpha_y, 2)}",
-        f"So b_2+d_2={round(1 - lambda_x / lambda_z + 1 / alpha_y, 2)}",
-        "--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply",
-        "--- and below 1 for theta_0 to be finite.",
-        sep="\n",
-    )
-
-    print("=" * 80)
-    print("RUNNING SIMULATIONS")
-    print("=" * 80)
+    if PRINT:
+        print(
+            f"lambda_x={lambda_x} -- lambda_z={lambda_z} -- alpha_y={alpha_y}",
+            f"Parameter values give b_2={round(1 - lambda_x / lambda_z, 2)}",
+            f"Parameter values give d_2={round(1 / alpha_y, 2)}",
+            f"So b_2+d_2={round(1 - lambda_x / lambda_z + 1 / alpha_y, 2)}",
+            "--- Remember, b_2 + d_2 should be below .5 for Theorem 2 to apply",
+            "--- and below 1 for theta_0 to be finite.",
+            sep="\n",
+        )
 
     nb_estimators = 5
     sample_size_set = [500]
@@ -133,6 +131,8 @@ if __name__ == "__main__":
             n_obs=sample_size,
             histogram=False,
             sigma=sigma_df,
+            print_report=PRINT,
         )
 
-        print(big_results)
+        if PRINT:
+            print(big_results)

@@ -8,7 +8,7 @@ Created on Wed Nov 11 12:07:14 2020
 
 import numpy as np
 from dataclasses import dataclass
-from scipy.stats import expon, pareto, norm
+from scipy.stats import expon, pareto, norm, beta
 
 
 from .default_values import DEFAULT_SAMPLE_SIZE
@@ -212,7 +212,7 @@ class LimitCaseDGP:
             raise ValueError(
                 "max(b1, b2) + max(d1, d2) should be below 0.5 for Theorem 2 to apply."
             )
-
+        self.theta0 = self.compute_theta()
         self.name = (
             f"limit_case_dgp_d1={self.d1}_d2={self.d2}_b1={self.b1}_b2={self.b2}"
         )
@@ -220,8 +220,19 @@ class LimitCaseDGP:
     def y_quantile(self, x):
         return -(x ** (-self.d1)) + (1 - x) ** (-self.d2)
 
+    def compute_theta(self):
+        """
+        compute_theta:
+            compute the true value of theta, using Monte Carlo.
+        """
+        U = np.random.uniform(size=100_000)
+        U_tilde = self.y_quantile(
+            norm().cdf(norm().cdf(beta(a=self.b1, b=self.b2).ppf(U)))
+        )
+        return np.mean(U_tilde)
+
     def generate(self):
         y = self.y_quantile(np.random.uniform(size=self.n))
         z = np.random.normal(loc=0, scale=1, size=self.n)
-        x = norm(loc=0, scale=1).ppf(np.random.beta(self.b1, self.b2, size=self.n))
+        x = norm(loc=0, scale=1).ppf(np.random.beta(a=self.b1, b=self.b2, size=self.n))
         return y, z, x
