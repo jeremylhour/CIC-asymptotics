@@ -14,7 +14,7 @@ from numba import njit
 # INVERSE DENSITY ESTIMATORS
 # ------------------------------------------------------------------------------------
 @njit
-def inv_density_ls(u_hat, y):
+def inv_density_ls(u_hat: np.ndarray, y: np.ndarray):
     """
     inv_density_ls :
         returns u_hat and inv_density using the Lewbel-Schennach (2007) method.
@@ -42,7 +42,7 @@ def inv_density_ls(u_hat, y):
 
 
 @njit
-def inv_density_xavier(u_hat, y, spacing_2: bool = True):
+def inv_density_xavier(u_hat: np.ndarray, y: np.ndarray, spacing_2: bool = True):
     """
     inv_density_xavier :
         returns inv_density using the Xavier method
@@ -80,7 +80,7 @@ def inv_density_xavier(u_hat, y, spacing_2: bool = True):
 # KERNELS
 # ------------------------------------------------------------------------------------
 @njit
-def epanechnikov_kernel(x):
+def epanechnikov_kernel(x: np.ndarray):
     """
     epanechnikov_kernel:
         Epanechnikov kernel function, as suggested in Athey and Imbens (2006).
@@ -93,7 +93,7 @@ def epanechnikov_kernel(x):
 
 
 @njit
-def gaussian_kernel(x):
+def gaussian_kernel(x: np.ndarray):
     """
     gaussian_kernel:
         Gaussian kernel function.
@@ -105,10 +105,10 @@ def gaussian_kernel(x):
 
 
 # ------------------------------------------------------------------------------------
-# KERNEL DENSITY ESTIMATOR
+# KERNEL DENSITY ESTIMATORS
 # ------------------------------------------------------------------------------------
 @njit
-def kernel_density_estimator(x, data, kernel=gaussian_kernel):
+def kernel_density_estimator(x: np.ndarray, data: np.ndarray, kernel=gaussian_kernel):
     """
     kernel_density_estimator:
         implements kernel density estimator with Silverman's rule of thumb,
@@ -119,9 +119,39 @@ def kernel_density_estimator(x, data, kernel=gaussian_kernel):
         data (np.array): data to estimate the function.
         kernel (function): function for the kernel.
     """
-    h = 1.06 * data.std() / (len(data) ** 0.2)  # Silverman's rule of thumb
-    y = (
-        np.expand_dims(x, 1) - data
-    ) / h  # Broadcast to an array dimension (len(x), len(data))
-    y = kernel(y) / (h * y.shape[1])
-    return np.sum(y, axis=1)
+    n = len(data)
+    m = len(x)
+    h = 1.06 * np.std(data) / (n**0.2)  # Silverman's rule of thumb
+    result = np.empty(m)
+
+    for i in range(m):
+        s = 0.0
+        for j in range(n):
+            s += kernel((x[i] - data[j]) / h)
+        result[i] = s / (n * h)
+    return result
+
+
+@njit
+def kernel_density_estimator_for_u(x: np.ndarray, u_hat: np.ndarray) -> np.ndarray:
+    """
+    kernel_density_estimator_for_u:
+        Implements a kernel density estimator for u_hat, as in the paper.
+
+    Args:
+        x (np.array): new points.
+        u_hat (np.array): data to estimate the function.
+    """
+    n = len(u_hat)
+    m = len(x)
+    result = np.empty(m)
+
+    for i in range(m):
+        xi = x[i]
+        hi = xi * (1.0 - xi) / np.log(n)
+        count = 0
+        for j in range(n):
+            if abs(xi - u_hat[j]) <= hi:
+                count += 1
+        result[i] = count / (hi * n)
+    return result
