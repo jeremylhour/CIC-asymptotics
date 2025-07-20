@@ -80,6 +80,18 @@ def inv_density_xavier(u_hat: np.ndarray, y: np.ndarray, spacing_2: bool = True)
 # KERNELS
 # ------------------------------------------------------------------------------------
 @njit
+def rectangular_kernel(x: np.ndarray):
+    """
+    rectangular_kernel:
+        Rectangular kernel function.
+
+    Args:
+        x (np.array): points.
+    """
+    return np.where(np.abs(x) <= 1, 0.5, 0.0)
+
+
+@njit
 def epanechnikov_kernel(x: np.ndarray):
     """
     epanechnikov_kernel:
@@ -88,8 +100,7 @@ def epanechnikov_kernel(x: np.ndarray):
     Args:
         x (np.array): data points.
     """
-    y = (1 - x**2 / 5) * 3 / (4 * np.sqrt(5))
-    return np.where(np.abs(x) > np.sqrt(5), 0, y)
+    return np.where(np.abs(x) > np.sqrt(5), 0, (1 - x**2 / 5) * 3 / (4 * np.sqrt(5)))
 
 
 @njit
@@ -102,6 +113,32 @@ def gaussian_kernel(x: np.ndarray):
      x (np.array): points.
     """
     return np.exp(-0.5 * x**2) / np.sqrt(2 * np.pi)
+
+
+@njit
+def cosine_kernel(x: np.ndarray):
+    """
+    cosine_kernel:
+        Cosine kernel function.
+
+    Args:
+        x (np.array): points.
+    """
+    return np.where(np.abs(x) <= 1, np.pi / 4 * np.cos(np.pi / 2 * x), 0.0)
+
+
+@njit
+def silverman_kernel(x: np.ndarray):
+    """
+    silverman_kernel:
+        Silverman's kernel function
+
+    Args:
+        x (np.array): points.
+    """
+    return (
+        np.exp(-np.abs(x) / np.sqrt(2)) * np.sin(np.abs(x) / np.sqrt(2) + np.pi / 4) / 2
+    )
 
 
 # ------------------------------------------------------------------------------------
@@ -120,8 +157,8 @@ def kernel_density_estimator(x: np.ndarray, data: np.ndarray, kernel=gaussian_ke
         kernel (function): function for the kernel.
     """
     n = len(data)
-    m = len(x)
     h = 1.06 * np.std(data) / (n**0.2)  # Silverman's rule of thumb
+    m = len(x)
     result = np.empty(m)
 
     for i in range(m):
@@ -153,5 +190,5 @@ def kernel_density_estimator_for_u(x: np.ndarray, u_hat: np.ndarray) -> np.ndarr
         for j in range(n):
             if abs(xi - u_hat[j]) <= hi:
                 count += 1
-        result[i] = count / (hi * n)
+        result[i] = count / (2 * hi * n)
     return result

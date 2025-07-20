@@ -24,7 +24,7 @@ from .density_estimation import (
 # LOWER-LEVEL FUNCTIONS
 # ------------------------------------------------------------------------------------
 @njit
-def compute_zeta(u_hat, inv_density, size: int):
+def compute_zeta(u_hat: np.ndarray, inv_density: np.ndarray, size: int) -> np.ndarray:
     """
     compute_zeta :
         function to compute zeta, similar to Q in Athey and Imbens (2006).
@@ -50,7 +50,7 @@ def compute_zeta(u_hat, inv_density, size: int):
 
 
 @njit
-def compute_phi(u_hat, inv_density, size):
+def compute_phi(u_hat: np.ndarray, inv_density: np.ndarray, size: int) -> np.ndarray:
     """
     compute_phi :
         function to compute phi, similar to P in Athey and Imbens (2006).
@@ -76,7 +76,7 @@ def compute_phi(u_hat, inv_density, size):
 
 
 @njit
-def compute_theta(u_hat, y):
+def compute_theta(u_hat: np.ndarray, y: np.ndarray) -> tuple:
     """
     compute_theta :
         returns theta_hat and counterfactual outcome
@@ -93,7 +93,9 @@ def compute_theta(u_hat, y):
     return counterfactual_y, theta_hat
 
 
-def counterfactual_ranks(x, points_for_distribution, method: str = "smoothed"):
+def counterfactual_ranks(
+    x: np.ndarray, points_for_distribution: np.ndarray, method: str = "smoothed"
+) -> np.ndarray:
     """
     counterfactual_ranks :
         compute \widehat U the value of the CDF at each element of points_to_predict,
@@ -123,9 +125,9 @@ def counterfactual_ranks(x, points_for_distribution, method: str = "smoothed"):
 # UNKNOWN RANKS
 # ------------------------------------------------------------------------------------
 def estimator_unknown_ranks(
-    y,
-    x,
-    z,
+    y: np.ndarray,
+    x: np.ndarray,
+    z: np.ndarray,
     method: str = "smoothed",
     se_method: str = "kernel",
     bootstrap_quantile=None,
@@ -204,6 +206,12 @@ def estimator_unknown_ranks(
     return theta_hat, se_
 
 
+def compute_double_integral():
+    """
+    compute_double_integral :
+    """
+
+
 # ------------------------------------------------------------------------------------
 # KNOWN RANKS
 # ------------------------------------------------------------------------------------
@@ -234,7 +242,7 @@ def estimator_known_ranks(y, u):
     compute_epsilon:
         Formula of Athey and Imbens (2006)
     """
-    epsilon = -(counterfactual_y - theta_hat)
+    epsilon = theta_hat - counterfactual_y
 
     """
     compute standard error
