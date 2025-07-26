@@ -90,7 +90,7 @@ def true_theta_observed_rank(distrib_y, distrib_u, size: int = 10_000):
     return np.mean(U_tilde)
 
 
-def generate_data_observed_rank(distrib_y, distrib_u, size: int = 1000):
+def generate_data_observed_rank(distrib_y, distrib_u, size: int = 1_000):
     """
     generate_data:
         generate data following the specified distributions.
@@ -104,7 +104,7 @@ def generate_data_observed_rank(distrib_y, distrib_u, size: int = 1000):
     y = distrib_y.ppf(np.random.uniform(size=size))
     u = distrib_u.ppf(np.random.uniform(size=size))
     theta0 = true_theta_observed_rank(
-        distrib_y=distrib_y, distrib_u=distrib_u, size=100000
+        distrib_y=distrib_y, distrib_u=distrib_u, size=100_000
     )
     return y, u, theta0
 

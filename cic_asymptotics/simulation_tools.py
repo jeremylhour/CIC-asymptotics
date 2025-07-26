@@ -7,16 +7,18 @@ import pandas as pd
 from tqdm import tqdm
 
 from .dgps import ExponentialDGP, GaussianDGP, LimitCaseDGP
-from .estimators import estimator_unknown_ranks
+from .estimators import (
+    compute_standard_error_estimated_ranks,
+    compute_bootstrap_quantiles,
+)
 
 np.random.seed(999)
+
 
 # ------------------------------------------------------------------------------------
 # HELPERS
 # ------------------------------------------------------------------------------------
-
-
-def create_dgp_from_config(config):
+def create_dgp_from_config(config: dict):
     """
     create_dgp_from_config:
         Create a DGP instance based on the provided configuration.
@@ -52,7 +54,7 @@ def create_dgp_from_config(config):
         raise ValueError("Unknown DGP type specified in the configuration.")
 
 
-def run_simulation(dgp, estimators, B: int = 1_000):
+def run_simulation(dgp, estimators: dict, B: int = 1_000):
     """
     run_simulation:
         Run a simulation for a given DGP and a set of estimators.
@@ -73,13 +75,13 @@ def run_simulation(dgp, estimators, B: int = 1_000):
         # for each estimator, compute the estimate and standard error
         res = {}
         for k, args in estimators.items():
-            theta, sigma = estimator_unknown_ranks(y, x, z, **args)
+            theta, sigma = compute_standard_error_estimated_ranks(y, x, z, **args)
             res[k] = {"theta": theta, "sigma": sigma}
 
         results.append(pd.DataFrame(res).unstack())
 
-        _, bootstrap_quantiles[b] = estimator_unknown_ranks(
-            y, x, z, method="smoothed", bootstrap_quantile=[0.025, 0.975]
+        bootstrap_quantiles[b] = compute_bootstrap_quantiles(
+            y, x, z, cdf_method="smoothed", quantiles=[0.025, 0.975]
         )
 
     # Compile the results

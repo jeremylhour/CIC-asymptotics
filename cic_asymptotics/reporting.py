@@ -13,6 +13,7 @@ def compute_metrics(
     n_obs: int,
     sigma=None,
     bootstrap_quantiles=None,
+    decimals: int = 4,
 ):
     """
     compute_metrics:
@@ -24,6 +25,7 @@ def compute_metrics(
         n_obs (int): sample size used during simulations
         sigma (pd.DataFrame): B x K np.array of B simulations for K standard errors
         bootstrap_quantiles (np.array): lower bound and upper bound of confidence interval computed by bootstrap
+        round (int): number of digits to round the results
     """
     if sigma is None:
         sigma = np.ones(y_hat.shape)
@@ -33,25 +35,34 @@ def compute_metrics(
         "theta0": theta0,
         "n_simu": len(y_hat),
         "n_obs": n_obs,
-        "bias": y_centered.mean(axis=0).to_dict(),
-        "MAE": abs(y_centered).mean(axis=0).to_dict(),
-        "RMSE": y_centered.std(axis=0).to_dict(),
+        "bias": y_centered.mean(axis=0).round(decimals).to_dict(),
+        "MAE": abs(y_centered).mean(axis=0).round(decimals).to_dict(),
+        "RMSE": y_centered.std(axis=0).round(decimals).to_dict(),
         "Coverage rate": (abs(y_centered / sigma) < norm.ppf(0.975))
         .mean(axis=0)
+        .round(decimals)
         .to_dict(),
         "Quantile .95": (np.sqrt(n_obs) * y_centered)
         .quantile(q=0.95, axis=0)
+        .round(decimals)
         .to_dict(),
-        "CI size": (2 * norm.ppf(0.975) * sigma.mean(axis=0)).to_dict(),
+        "CI size": (2 * norm.ppf(0.975) * sigma.mean(axis=0)).round(decimals).to_dict(),
     }
 
     if bootstrap_quantiles is not None:
         metrics["Coverage rate"]["bootstrap"] = (
-            (bootstrap_quantiles[:, 0] < theta0) & (bootstrap_quantiles[:, 1] > theta0)
-        ).mean()
+            (
+                (bootstrap_quantiles[:, 0] < theta0)
+                & (bootstrap_quantiles[:, 1] > theta0)
+            )
+            .mean()
+            .round(decimals)
+        )
         metrics["CI size"]["bootstrap"] = (
-            bootstrap_quantiles[:, 1] - bootstrap_quantiles[:, 0]
-        ).mean()
+            (bootstrap_quantiles[:, 1] - bootstrap_quantiles[:, 0])
+            .mean()
+            .round(decimals)
+        )
 
     return metrics
 
@@ -76,7 +87,7 @@ def print_report(report):
 
 
 def get_performance_report(
-    y_hat,
+    y_hat: np.array,
     theta0: float,
     n_obs: int,
     sigma=None,

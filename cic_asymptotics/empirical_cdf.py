@@ -15,13 +15,13 @@ from numba import njit
 # EMPIRICAL CDF
 # ------------------------------------------------------------------------------------
 @njit
-def ranks_and_antiranks(x):
+def ranks_and_antiranks(x: np.ndarray) -> "tuple[np.ndarray, np.ndarray]":
     """
     ranks_and_antiranks:
         returns ranks and antiranks for an array of points
 
     Args:
-        points (np.array): vector of points of dimension (n,).
+        points (np.array): vector of points.
     """
     antiranks = np.argsort(x)
     ranks = np.argsort(antiranks)
@@ -29,7 +29,7 @@ def ranks_and_antiranks(x):
 
 
 @njit
-def smoothed_empirical_cdf(x, data):
+def smoothed_empirical_cdf(x: np.ndarray, data: np.ndarray) -> np.ndarray:
     """
     smoothed_empirical_cdf:
         Smoothed empirical CDF as in Shorack and Wellner (p. 86), but extended to non-bounded support.

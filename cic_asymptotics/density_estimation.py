@@ -1,5 +1,6 @@
 """
-Functions relatex to kernel density estimation and inverse density estimators.
+All function related to density estimation.
+Coded in numba for speed.
 
 Created on Tue Nov 10 18:26:34 2020
 
@@ -14,7 +15,7 @@ from numba import njit
 # INVERSE DENSITY ESTIMATORS
 # ------------------------------------------------------------------------------------
 @njit
-def inv_density_ls(u_hat: np.ndarray, y: np.ndarray):
+def inv_density_ls(u_hat: np.ndarray, y: np.ndarray) -> "tuple[np.ndarray, np.ndarray]":
     """
     inv_density_ls :
         returns u_hat and inv_density using the Lewbel-Schennach (2007) method.
@@ -42,7 +43,9 @@ def inv_density_ls(u_hat: np.ndarray, y: np.ndarray):
 
 
 @njit
-def inv_density_xavier(u_hat: np.ndarray, y: np.ndarray, spacing_2: bool = True):
+def inv_density_xavier(
+    u_hat: np.ndarray, y: np.ndarray, spacing_2: bool = True
+) -> np.ndarray:
     """
     inv_density_xavier :
         returns inv_density using the Xavier method
@@ -80,7 +83,7 @@ def inv_density_xavier(u_hat: np.ndarray, y: np.ndarray, spacing_2: bool = True)
 # KERNELS
 # ------------------------------------------------------------------------------------
 @njit
-def rectangular_kernel(x: np.ndarray):
+def rectangular_kernel(x: np.ndarray) -> np.ndarray:
     """
     rectangular_kernel:
         Rectangular kernel function.
@@ -92,52 +95,66 @@ def rectangular_kernel(x: np.ndarray):
 
 
 @njit
-def epanechnikov_kernel(x: np.ndarray):
+def epanechnikov_kernel(x: np.ndarray) -> np.ndarray:
     """
     epanechnikov_kernel:
         Epanechnikov kernel function, as suggested in Athey and Imbens (2006).
 
     Args:
         x (np.array): data points.
+
+    Returns:
+        np.array: values of the Epanechnikov kernel at points x.
     """
     return np.where(np.abs(x) > np.sqrt(5), 0, (1 - x**2 / 5) * 3 / (4 * np.sqrt(5)))
 
 
 @njit
-def gaussian_kernel(x: np.ndarray):
+def gaussian_kernel(x: np.ndarray) -> np.ndarray:
     """
     gaussian_kernel:
         Gaussian kernel function.
 
     Args:
      x (np.array): points.
+
+    Returns:
+        np.array: values of the Gaussian kernel at points x.
     """
     return np.exp(-0.5 * x**2) / np.sqrt(2 * np.pi)
 
 
 @njit
-def cosine_kernel(x: np.ndarray):
+def cosine_kernel(x: np.ndarray) -> np.ndarray:
     """
     cosine_kernel:
         Cosine kernel function.
 
     Args:
         x (np.array): points.
+
+    Returns:
+        np.array: values of the Cosine kernel at points x.
     """
-    return np.where(np.abs(x) <= 1, np.pi / 4 * np.cos(np.pi / 2 * x), 0.0)
+    return np.where(np.abs(x) <= 1, 0.25 * np.pi * np.cos(0.5 * np.pi * x), 0.0)
 
 
 @njit
-def silverman_kernel(x: np.ndarray):
+def silverman_kernel(x: np.ndarray) -> np.ndarray:
     """
     silverman_kernel:
         Silverman's kernel function
 
     Args:
         x (np.array): points.
+
+    Returns:
+        np.array: values of the Silverman's kernel at points x.
     """
     return (
-        np.exp(-np.abs(x) / np.sqrt(2)) * np.sin(np.abs(x) / np.sqrt(2) + np.pi / 4) / 2
+        0.5
+        * np.exp(-np.abs(x) / np.sqrt(2))
+        * np.sin(np.abs(x) / np.sqrt(2) + 0.25 * np.pi)
     )
 
 
@@ -145,16 +162,21 @@ def silverman_kernel(x: np.ndarray):
 # KERNEL DENSITY ESTIMATORS
 # ------------------------------------------------------------------------------------
 @njit
-def kernel_density_estimator(x: np.ndarray, data: np.ndarray, kernel=gaussian_kernel):
+def kernel_density_estimator(
+    x: np.ndarray, data: np.ndarray, kernel=gaussian_kernel
+) -> np.ndarray:
     """
     kernel_density_estimator:
         implements kernel density estimator with Silverman's rule of thumb,
         as suggested in Athey and Imbens (2006).
 
     Args:
-        x (np.array): new points.
+        x (np.array): new points at which to evaluate the density.
         data (np.array): data to estimate the function.
-        kernel (function): function for the kernel.
+        kernel (function): kernel.
+
+    Returns:
+        result (np.array): estimated density at points x.
     """
     n = len(data)
     h = 1.06 * np.std(data) / (n**0.2)  # Silverman's rule of thumb
@@ -170,16 +192,21 @@ def kernel_density_estimator(x: np.ndarray, data: np.ndarray, kernel=gaussian_ke
 
 
 @njit
-def kernel_density_estimator_for_u(x: np.ndarray, u_hat: np.ndarray) -> np.ndarray:
+def kernel_density_estimator_with_moving_bandwith(
+    x: np.ndarray, data: np.ndarray
+) -> np.ndarray:
     """
-    kernel_density_estimator_for_u:
-        Implements a kernel density estimator for u_hat, as in the paper.
+    kernel_density_estimator_with_moving_bandwith:
+        Implements a kernel density estimator with a moving bandwith.
 
     Args:
-        x (np.array): new points.
-        u_hat (np.array): data to estimate the function.
+        x (np.array): new points at which to evaluate the density.
+        data (np.array): data to estimate the function.
+
+    Returns:
+        result (np.array): estimated density at points x.
     """
-    n = len(u_hat)
+    n = len(data)
     m = len(x)
     result = np.empty(m)
 
@@ -188,7 +215,7 @@ def kernel_density_estimator_for_u(x: np.ndarray, u_hat: np.ndarray) -> np.ndarr
         hi = xi * (1.0 - xi) / np.log(n)
         count = 0
         for j in range(n):
-            if abs(xi - u_hat[j]) <= hi:
+            if abs(xi - data[j]) <= hi:
                 count += 1
         result[i] = count / (2 * hi * n)
     return result

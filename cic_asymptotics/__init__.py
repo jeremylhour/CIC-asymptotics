@@ -1,8 +1,12 @@
 from .empirical_cdf import smoothed_empirical_cdf
 from .estimators import (
-    estimator_unknown_ranks,
-    estimator_known_ranks,
+    compute_theta_hat,
+    compute_counterfactual_ranks,
+    compute_estimator,
+    compute_standard_error_estimated_ranks,
+    compute_standard_error_known_ranks,
     compute_bootstrap_sample,
+    compute_bootstrap_quantiles,
 )
 from .dgps import (
     true_theta,
@@ -21,10 +25,12 @@ from .default_values import (
 
 __all__ = [
     "smoothed_empirical_cdf",
-    "estimator_known_ranks",
-    "estimator_unknown_ranks",
+    "compute_theta_hat",
+    "compute_counterfactual_ranks",
+    "compute_estimatorcompute_standard_error_estimated_ranks",
+    "compute_standard_error_known_ranks",
     "compute_bootstrap_sample",
-    "true_theta",
+    "compute_bootstrap_quantilestrue_theta",
     "analytical_theta",
     "create_dgp_from_config",
     "get_performance_report",

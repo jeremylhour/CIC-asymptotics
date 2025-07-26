@@ -6,7 +6,7 @@ simulation_size: 100
 
 config:
   dgp: limit-case
-  n: 1000
+  n: 100
   params:
     d1: .2
     d2: .2
@@ -15,23 +15,27 @@ config:
 
 estimators:
   Standard kernel:
-    method: standard
+    cdf_method: standard
     se_method: kernel
 
   Standard Xavier:
-    method: standard
+    cdf_method: standard
     se_method: xavier
 
-  Smooth kernel:
-    method: smoothed
+  Smoothed kernel:
+    cdf_method: smoothed
     se_method: kernel
 
-  Smooth LS:
-    method: smoothed
+  Smoothed LS:
+    cdf_method: smoothed
     se_method: lewbel-schennach
 
-  Smooth Xavier:
-    method: smoothed
+  Smoothed Xavier:
+    cdf_method: smoothed
     se_method: xavier
+
+  Sample splitting:
+    cdf_method: smoothed
+    se_method: sample-splitting
 
 output_path: output/

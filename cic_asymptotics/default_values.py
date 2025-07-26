@@ -1,11 +1,15 @@
 DEFAULT_SAMPLE_SIZE = 1_000
 
 DEFAULT_ESTIMATORS = {
-    "Standard kernel": {"method": "standard", "se_method": "kernel"},
-    "Standard Xavier": {"method": "standard", "se_method": "xavier"},
-    "Smooth kernel": {"method": "smoothed", "se_method": "kernel"},
-    "Smooth LS": {"method": "smoothed", "se_method": "lewbel-schennach"},
-    "Smooth Xavier": {"method": "smoothed", "se_method": "xavier"},
+    "Standard kernel": {"cdf_method": "standard", "se_method": "kernel"},
+    "Standard Xavier": {"cdf_method": "standard", "se_method": "xavier"},
+    "Smoothed kernel": {"cdf_method": "smoothed", "se_method": "kernel"},
+    "Smoothed LS": {"cdf_method": "smoothed", "se_method": "lewbel-schennach"},
+    "Smoothed Xavier": {"cdf_method": "smoothed", "se_method": "xavier"},
+    "Smoothed Sample-splitting": {
+        "cdf_method": "smoothed",
+        "se_method": "sample-splitting",
+    },
 }
 
 DEFAULT_CONFIG = {
