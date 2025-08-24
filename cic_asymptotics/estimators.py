@@ -183,7 +183,7 @@ def compute_estimator(
         theta_hat, counterfactual_y = compute_theta_hat(u_hat=u_hat, y=y)
         return theta_hat, counterfactual_y, u_hat
     elif (u is not None) and (z is None) and (x is None):
-        theta_hat, counterfactual_y = compute_theta_hat(u_hat=u_hat, y=y)
+        theta_hat, counterfactual_y = compute_theta_hat(u_hat=u, y=y)
         return theta_hat, counterfactual_y
     else:
         raise ValueError("Either (x, z) or u must be provided, but not both.")
