@@ -198,7 +198,7 @@ def compute_standard_error_estimated_ranks(
     z: np.ndarray = None,
     cdf_method: str = "smoothed",
     se_method: str = "sample-splitting",
-) -> np.ndarray:
+) -> "tuple[np.ndarray, np.ndarray]":
     """
     compute_standard_error_estimated_ranks :
             computes the estimator (1), i.e. average of quantiles of the outcome for each estimated rank,
@@ -342,7 +342,7 @@ def compute_bootstrap_quantiles(
     B: int = 1_000,
     cdf_method: str = "smoothed",
     quantiles: list = [0.025, 0.975],
-) -> "tuple[np.ndarray, np.ndarray]":
+) -> np.ndarray:
     """
     compute_bootstrap_quantiles :
         computes the bootstrapped quantiles of the estimator

@@ -8,10 +8,10 @@ config:
   dgp: limit-case
   n: 100
   params:
-    d1: .2
-    d2: .2
-    b1: .2
-    b2: .2
+    d1: .1
+    d2: .1
+    b1: .1
+    b2: .1
 
 estimators:
   Standard kernel:

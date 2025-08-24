@@ -198,6 +198,7 @@ class LimitCaseDGP:
     """
 
     n: int = DEFAULT_SAMPLE_SIZE
+    clip_value: float = 1e-15
     d1: float = 0.249
     d2: float = 0.249
     b1: float = 0.249
@@ -234,5 +235,11 @@ class LimitCaseDGP:
     def generate(self):
         y = self.y_quantile(np.random.uniform(size=self.n))
         z = np.random.normal(loc=0, scale=1, size=self.n)
-        x = norm(loc=0, scale=1).ppf(np.random.beta(a=self.b1, b=self.b2, size=self.n))
+        x = norm(loc=0, scale=1).ppf(
+            np.clip(
+                np.random.beta(a=self.b1, b=self.b2, size=self.n),
+                a_min=self.clip_value,
+                a_max=1 - self.clip_value,
+            )
+        )
         return y, z, x
